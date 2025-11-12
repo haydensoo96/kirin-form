@@ -7,7 +7,7 @@ const Home = ({ onNavigateToForm }) => {
   const [loading, setLoading] = useState(true);
 
   // Replace this with your Google Apps Script Web App URL
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEahEV1ejD19wWxxs76Ly7PWcKwx6-5pdwh8fCjqxMCpXgaZUOXAdFeH-zdVS-Td1a/exec';
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRlKPFg5Ks23e4KzDIoHelrPq3n7nqQM7SW0nhkMFj1nlsvdeSXrJ0OGKnhyvLI479/exec';
 
   useEffect(() => {
     fetchWinners();

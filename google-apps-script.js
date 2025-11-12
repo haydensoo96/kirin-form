@@ -9,6 +9,8 @@ function doGet(e) {
       return getWinners();
     } else if (action === 'getSubmissionsByNRIC') {
       return getSubmissionsByNRIC(e.parameter.nric);
+    } else if (action === 'checkReceiptNumber') {
+      return checkReceiptNumber(e.parameter.receiptNumber);
     }
 
     return ContentService
@@ -229,6 +231,44 @@ function getSubmissionsByNRIC(nric) {
       .createTextOutput(JSON.stringify({
         'result': 'success',
         'data': submissions
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        'result': 'error',
+        'message': error.toString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Check if receipt number exists
+function checkReceiptNumber(receiptNumber) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const lastRow = sheet.getLastRow();
+
+    if (lastRow <= 1 || !receiptNumber) {
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          'result': 'success',
+          'exists': false
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Get all receipt numbers from column G (index 7)
+    const receiptColumn = sheet.getRange(2, 7, lastRow - 1, 1).getValues();
+    const existingReceipts = receiptColumn.map(row => row[0].toString().trim());
+
+    // Check if the receipt number already exists
+    const exists = existingReceipts.includes(receiptNumber.trim());
+
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        'result': 'success',
+        'exists': exists
       }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {

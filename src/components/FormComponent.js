@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -20,9 +20,11 @@ const FormComponent = () => {
   const [submissions, setSubmissions] = useState([]);
   const [trackingNRIC, setTrackingNRIC] = useState('');
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+  const [receiptExists, setReceiptExists] = useState(false);
+  const [checkingReceipt, setCheckingReceipt] = useState(false);
 
   // Replace this with your Google Apps Script Web App URL
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEahEV1ejD19wWxxs76Ly7PWcKwx6-5pdwh8fCjqxMCpXgaZUOXAdFeH-zdVS-Td1a/exec'
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRlKPFg5Ks23e4KzDIoHelrPq3n7nqQM7SW0nhkMFj1nlsvdeSXrJ0OGKnhyvLI479/exec';
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -98,6 +100,40 @@ const FormComponent = () => {
     fetchSubmissionsByNRIC(trackingNRIC);
   };
 
+  // Debounced receipt number validation
+  const checkReceiptNumberExists = useCallback(async (receiptNumber) => {
+    if (!receiptNumber || receiptNumber.trim() === '') {
+      setReceiptExists(false);
+      setCheckingReceipt(false);
+      return;
+    }
+
+    setCheckingReceipt(true);
+    try {
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=checkReceiptNumber&receiptNumber=${encodeURIComponent(receiptNumber)}`);
+      const data = await response.json();
+
+      console.log('Receipt check response:', data);
+
+      if (data.result === 'success') {
+        setReceiptExists(data.exists);
+      }
+    } catch (error) {
+      console.error('Error checking receipt number:', error);
+    } finally {
+      setCheckingReceipt(false);
+    }
+  }, [GOOGLE_SCRIPT_URL]);
+
+  // Effect to check receipt number with debounce
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      checkReceiptNumberExists(formData.receiptNumber);
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [formData.receiptNumber, checkReceiptNumberExists]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -105,6 +141,12 @@ const FormComponent = () => {
     if (!formData.segment || !formData.fullName || !formData.nric || !formData.mobileNumber ||
         !formData.email || !formData.receiptNumber || !formData.receiptDate || !formData.qnaAnswer) {
       toast.error('Please fill in all required fields');
+      return;
+    }
+
+    // Check if receipt number already exists
+    if (receiptExists) {
+      toast.error('This receipt number has already been submitted');
       return;
     }
 
@@ -161,24 +203,18 @@ const FormComponent = () => {
       };
 
       // Submit to Google Apps Script
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
+      await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(submissionData),
-        redirect: 'follow'
+        body: JSON.stringify(submissionData)
       });
 
-      const result = await response.json();
-
-      if (result.result === 'success') {
-        toast.success('Form submitted successfully!');
-      } else {
-        toast.error(result.message || 'Failed to submit form');
-        setLoading(false);
-        return;
-      }
+      // Note: with 'no-cors' mode, we can't read the response
+      // Assume success if no error is thrown
+      toast.success('Form submitted successfully!');
 
       // Reset form
       setFormData({
@@ -194,6 +230,8 @@ const FormComponent = () => {
       });
       setImageFile(null);
       setImagePreview(null);
+      setReceiptExists(false);
+      setCheckingReceipt(false);
 
       // Reset file input
       document.getElementById('image-upload').value = '';
@@ -325,16 +363,43 @@ const FormComponent = () => {
           <label htmlFor="receiptNumber" className="block text-sm font-medium text-gray-700 mb-2">
             Receipt Number <span className="text-red-500">*</span>
           </label>
-          <input
-            type="text"
-            id="receiptNumber"
-            name="receiptNumber"
-            value={formData.receiptNumber}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-            placeholder="Enter receipt number"
-          />
+          <div className="mb-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-md">
+            <p className="text-sm text-yellow-800">
+              <span className="font-semibold">Important:</span> One receipt can only be submitted once. Duplicate receipt submissions will be ignored.
+            </p>
+          </div>
+          <div className="relative">
+            <input
+              type="text"
+              id="receiptNumber"
+              name="receiptNumber"
+              value={formData.receiptNumber}
+              onChange={handleInputChange}
+              required
+              className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:border-transparent outline-none transition ${
+                receiptExists
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 focus:ring-blue-500'
+              }`}
+              placeholder="Enter receipt number"
+            />
+            {checkingReceipt && (
+              <div className="absolute right-3 top-2.5">
+                <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </div>
+            )}
+          </div>
+          {receiptExists && (
+            <p className="mt-2 text-sm text-red-600 flex items-start">
+              <svg className="h-5 w-5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <span className="font-semibold">Invalid:</span>&nbsp;This receipt number has been submitted previously.
+            </p>
+          )}
         </div>
 
         {/* Receipt Date */}
@@ -428,9 +493,9 @@ const FormComponent = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || receiptExists}
           className={`w-full py-3 px-4 rounded-md font-semibold text-white transition flex items-center justify-center ${
-            loading
+            loading || receiptExists
               ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300'
           }`}
@@ -459,6 +524,8 @@ const FormComponent = () => {
               </svg>
               Submitting...
             </>
+          ) : receiptExists ? (
+            'Submit Form'
           ) : (
             'Submit Form'
           )}
