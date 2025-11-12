@@ -7,7 +7,7 @@ const Home = ({ onNavigateToForm }) => {
   const [loading, setLoading] = useState(true);
 
   // Replace this with your Google Apps Script Web App URL
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRlKPFg5Ks23e4KzDIoHelrPq3n7nqQM7SW0nhkMFj1nlsvdeSXrJ0OGKnhyvLI479/exec';
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuGP2d-UqG6pxqrScREnvfhF4d-s7QAzl-96itpFRfCbPLopyNxc3ojgA-DuA6GmAJ/exec';
 
   useEffect(() => {
     fetchWinners();
@@ -124,9 +124,6 @@ const Home = ({ onNavigateToForm }) => {
                         Name
                       </th>
                       <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
-                        NRIC
-                      </th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
                         Receipt Number
                       </th>
                     </tr>
@@ -141,9 +138,6 @@ const Home = ({ onNavigateToForm }) => {
                       >
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {winner.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                          {winner.nric}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                           {winner.receiptNumber}

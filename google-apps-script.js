@@ -7,8 +7,8 @@ function doGet(e) {
 
     if (action === 'getWinners') {
       return getWinners();
-    } else if (action === 'getSubmissionsByNRIC') {
-      return getSubmissionsByNRIC(e.parameter.nric);
+    } else if (action === 'getSubmissionsByMobileNumber') {
+      return getSubmissionsByMobileNumber(e.parameter.mobileNumber);
     } else if (action === 'checkReceiptNumber') {
       return checkReceiptNumber(e.parameter.receiptNumber);
     }
@@ -115,12 +115,13 @@ function doPost(e) {
     }
 
     // Append the data to the sheet
+    // Add single quote prefix to preserve leading zeros for NRIC and Mobile Number
     sheet.appendRow([
       data.timestamp || new Date().toISOString(),
       data.segment || '',
       data.fullName || '',
-      data.nric || '',
-      data.mobileNumber || '',
+      "'" + (data.nric || ''),           // Force text format to preserve leading zeros
+      "'" + (data.mobileNumber || ''),   // Force text format to preserve leading zeros
       data.email || '',
       data.receiptNumber || '',
       data.receiptDate || '',
@@ -195,13 +196,13 @@ function getWinners() {
   }
 }
 
-// Get submissions by NRIC
-function getSubmissionsByNRIC(nric) {
+// Get submissions by Mobile Number
+function getSubmissionsByMobileNumber(mobileNumber) {
   try {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     const lastRow = sheet.getLastRow();
 
-    if (lastRow <= 1 || !nric) {
+    if (lastRow <= 1 || !mobileNumber) {
       return ContentService
         .createTextOutput(JSON.stringify({
           'result': 'success',
@@ -214,11 +215,11 @@ function getSubmissionsByNRIC(nric) {
     const data = sheet.getRange(2, 1, lastRow - 1, 12).getValues();
     const submissions = [];
 
-    // Filter by NRIC (column 4)
+    // Filter by Mobile Number (column 5)
     for (let i = 0; i < data.length; i++) {
-      if (data[i][3].toString().trim() === nric.trim()) {
+      if (data[i][4].toString().trim() === mobileNumber.trim()) {
         submissions.push({
-          nric: data[i][3],              // NRIC (column D)
+          mobileNumber: data[i][4],      // Mobile Number (column E)
           name: data[i][2],              // Full Name (column C)
           dateOfSubmission: data[i][0],  // Timestamp (column A)
           receiptNumber: data[i][6],     // Receipt Number (column G)

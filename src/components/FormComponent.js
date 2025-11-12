@@ -18,13 +18,13 @@ const FormComponent = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [submissions, setSubmissions] = useState([]);
-  const [trackingNRIC, setTrackingNRIC] = useState('');
+  const [trackingMobileNumber, setTrackingMobileNumber] = useState('');
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [receiptExists, setReceiptExists] = useState(false);
   const [checkingReceipt, setCheckingReceipt] = useState(false);
 
   // Replace this with your Google Apps Script Web App URL
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRlKPFg5Ks23e4KzDIoHelrPq3n7nqQM7SW0nhkMFj1nlsvdeSXrJ0OGKnhyvLI479/exec';
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuGP2d-UqG6pxqrScREnvfhF4d-s7QAzl-96itpFRfCbPLopyNxc3ojgA-DuA6GmAJ/exec';
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -69,21 +69,21 @@ const FormComponent = () => {
     });
   };
 
-  const fetchSubmissionsByNRIC = async (nric) => {
-    if (!nric || nric.length !== 12) {
-      toast.error('Please enter a valid 12-digit NRIC');
+  const fetchSubmissionsByMobileNumber = async (mobileNumber) => {
+    if (!mobileNumber || mobileNumber.length > 12) {
+      toast.error('Please enter a valid mobile number (max 12 characters)');
       return;
     }
 
     setLoadingSubmissions(true);
     try {
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getSubmissionsByNRIC&nric=${nric}`);
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getSubmissionsByMobileNumber&mobileNumber=${mobileNumber}`);
       const data = await response.json();
 
       if (data.result === 'success') {
         setSubmissions(data.data);
         if (data.data.length === 0) {
-          toast.info('No submissions found for this NRIC');
+          toast.info('No submissions found for this mobile number');
         }
       } else {
         toast.error('Failed to fetch submissions');
@@ -97,7 +97,7 @@ const FormComponent = () => {
   };
 
   const handleTrackSubmissions = () => {
-    fetchSubmissionsByNRIC(trackingNRIC);
+    fetchSubmissionsByMobileNumber(trackingMobileNumber);
   };
 
   // Debounced receipt number validation
@@ -185,10 +185,9 @@ const FormComponent = () => {
       return;
     }
 
-    // Validate mobile number format
-    const mobileRegex = /^\d{10}$/;
-    if (!mobileRegex.test(formData.mobileNumber)) {
-      toast.error('Mobile number must be 10 digits (format: 0122223333)');
+    // Validate mobile number format (max 12 characters)
+    if (formData.mobileNumber.length > 12) {
+      toast.error('Mobile number cannot exceed 12 characters');
       return;
     }
 
@@ -336,7 +335,7 @@ const FormComponent = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
             placeholder="000000112222"
           />
-          <p className="mt-1 text-sm text-gray-500">Format: 12 digits (000000112222)</p>
+          <p className="mt-1 text-sm text-gray-500">Example: 112233005555</p>
         </div>
 
         {/* Mobile Number */}
@@ -351,12 +350,11 @@ const FormComponent = () => {
             value={formData.mobileNumber}
             onChange={handleInputChange}
             required
-            maxLength="10"
-            pattern="\d{10}"
+            maxLength="12"
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
             placeholder="0122223333"
           />
-          <p className="mt-1 text-sm text-gray-500">Format: 10 digits (0122223333)</p>
+          <p className="mt-1 text-sm text-gray-500">Maximum 12 characters</p>
         </div>
 
         {/* Email Address */}
@@ -551,15 +549,15 @@ const FormComponent = () => {
       {/* Entry Tracker Section */}
       <div className="mt-12 pt-8 border-t border-gray-200">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Entry Tracker</h2>
-        <p className="text-gray-600 mb-4">Track your submissions by entering your NRIC</p>
+        <p className="text-gray-600 mb-4">Track your submissions by entering your Mobile Number</p>
 
         <div className="flex gap-3 mb-6">
           <input
             type="text"
-            value={trackingNRIC}
-            onChange={(e) => setTrackingNRIC(e.target.value)}
+            value={trackingMobileNumber}
+            onChange={(e) => setTrackingMobileNumber(e.target.value)}
             maxLength="12"
-            placeholder="Enter your NRIC (12 digits)"
+            placeholder="Mobile Number (e.g., 0123456789)"
             className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
           />
           <button
@@ -577,7 +575,7 @@ const FormComponent = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                    NRIC
+                    Mobile Number
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                     Name
@@ -597,7 +595,7 @@ const FormComponent = () => {
                 {submissions.map((submission, index) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {submission.nric}
+                      {submission.mobileNumber}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {submission.name}
