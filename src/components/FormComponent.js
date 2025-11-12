@@ -161,18 +161,24 @@ const FormComponent = () => {
       };
 
       // Submit to Google Apps Script
-      await fetch(GOOGLE_SCRIPT_URL, {
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(submissionData)
+        body: JSON.stringify(submissionData),
+        redirect: 'follow'
       });
 
-      // Note: with 'no-cors' mode, we can't read the response
-      // Assume success if no error is thrown
-      toast.success('Form submitted successfully!');
+      const result = await response.json();
+
+      if (result.result === 'success') {
+        toast.success('Form submitted successfully!');
+      } else {
+        toast.error(result.message || 'Failed to submit form');
+        setLoading(false);
+        return;
+      }
 
       // Reset form
       setFormData({
