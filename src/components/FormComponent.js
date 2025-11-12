@@ -134,6 +134,24 @@ const FormComponent = () => {
     return () => clearTimeout(timeoutId);
   }, [formData.receiptNumber, checkReceiptNumberExists]);
 
+  // Check if all required fields are filled
+  const isFormValid = () => {
+    return (
+      formData.segment &&
+      formData.fullName &&
+      formData.nric &&
+      formData.mobileNumber &&
+      formData.email &&
+      formData.receiptNumber &&
+      formData.receiptDate &&
+      formData.qnaAnswer &&
+      formData.termsAccepted &&
+      imageFile &&
+      !receiptExists &&
+      !checkingReceipt
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -493,9 +511,9 @@ const FormComponent = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={loading || receiptExists}
+          disabled={loading || !isFormValid()}
           className={`w-full py-3 px-4 rounded-md font-semibold text-white transition flex items-center justify-center ${
-            loading || receiptExists
+            loading || !isFormValid()
               ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300'
           }`}
@@ -524,8 +542,6 @@ const FormComponent = () => {
               </svg>
               Submitting...
             </>
-          ) : receiptExists ? (
-            'Submit Form'
           ) : (
             'Submit Form'
           )}
