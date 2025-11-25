@@ -25,7 +25,6 @@ const FormComponent = () => {
   const [trackingMobileNumber, setTrackingMobileNumber] = useState('');
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [receiptExists, setReceiptExists] = useState(false);
-  const [checkingReceipt, setCheckingReceipt] = useState(false);
 
   const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuGP2d-UqG6pxqrScREnvfhF4d-s7QAzl-96itpFRfCbPLopyNxc3ojgA-DuA6GmAJ/exec';
 
@@ -64,10 +63,8 @@ const FormComponent = () => {
   const checkReceiptNumberExists = useCallback(async (receiptNumber) => {
     if (!receiptNumber || receiptNumber.trim() === '') {
       setReceiptExists(false);
-      setCheckingReceipt(false);
       return;
     }
-    setCheckingReceipt(true);
     try {
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=checkReceiptNumber&receiptNumber=${encodeURIComponent(receiptNumber)}`);
       const data = await response.json();
@@ -76,8 +73,6 @@ const FormComponent = () => {
       }
     } catch (error) {
       console.error('Error checking receipt number:', error);
-    } finally {
-      setCheckingReceipt(false);
     }
   }, [GOOGLE_SCRIPT_URL]);
 
