@@ -3,16 +3,20 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const FormComponent = () => {
+  const [activeTab, setActiveTab] = useState('submit');
   const [formData, setFormData] = useState({
     segment: '',
     fullName: '',
     nric: '',
     mobileNumber: '',
     email: '',
+    address: '',
     receiptNumber: '',
     receiptDate: '',
     qnaAnswer: '',
-    termsAccepted: false
+    termsAccepted: false,
+    ageConfirmed: true,
+    marketingConsent: false
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -23,39 +27,27 @@ const FormComponent = () => {
   const [receiptExists, setReceiptExists] = useState(false);
   const [checkingReceipt, setCheckingReceipt] = useState(false);
 
-  // Replace this with your Google Apps Script Web App URL
   const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuGP2d-UqG6pxqrScREnvfhF4d-s7QAzl-96itpFRfCbPLopyNxc3ojgA-DuA6GmAJ/exec';
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         toast.error('Please upload a valid image file');
         return;
       }
-
-      // Validate file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
         toast.error('Image size should be less than 5MB');
         return;
       }
-
       setImageFile(file);
-
-      // Create preview
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
+      reader.onloadend = () => setImagePreview(reader.result);
       reader.readAsDataURL(file);
     }
   };
@@ -69,17 +61,135 @@ const FormComponent = () => {
     });
   };
 
-  const fetchSubmissionsByMobileNumber = async (mobileNumber) => {
-    if (!mobileNumber || mobileNumber.length > 12) {
-      toast.error('Please enter a valid mobile number (max 12 characters)');
+  const checkReceiptNumberExists = useCallback(async (receiptNumber) => {
+    if (!receiptNumber || receiptNumber.trim() === '') {
+      setReceiptExists(false);
+      setCheckingReceipt(false);
+      return;
+    }
+    setCheckingReceipt(true);
+    try {
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=checkReceiptNumber&receiptNumber=${encodeURIComponent(receiptNumber)}`);
+      const data = await response.json();
+      if (data.result === 'success') {
+        setReceiptExists(data.exists);
+      }
+    } catch (error) {
+      console.error('Error checking receipt number:', error);
+    } finally {
+      setCheckingReceipt(false);
+    }
+  }, [GOOGLE_SCRIPT_URL]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      checkReceiptNumberExists(formData.receiptNumber);
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [formData.receiptNumber, checkReceiptNumberExists]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.segment || !formData.fullName || !formData.nric || !formData.mobileNumber ||
+        !formData.email || !formData.address || !formData.receiptNumber || !formData.receiptDate || !formData.qnaAnswer) {
+      toast.error('Please fill in all required fields');
       return;
     }
 
+    if (receiptExists) {
+      toast.error('This receipt number has already been submitted');
+      return;
+    }
+
+    if (!imageFile) {
+      toast.error('Please upload a receipt image');
+      return;
+    }
+
+    if (!formData.termsAccepted) {
+      toast.error('Please accept the Terms & Conditions');
+      return;
+    }
+
+    const nricRegex = /^\d{12}$/;
+    if (!nricRegex.test(formData.nric)) {
+      toast.error('NRIC must be 12 digits');
+      return;
+    }
+
+    if (formData.mobileNumber.length > 12) {
+      toast.error('Mobile number cannot exceed 12 characters');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const imageBase64 = await convertImageToBase64(imageFile);
+      const submissionData = {
+        segment: formData.segment,
+        fullName: formData.fullName,
+        nric: formData.nric,
+        mobileNumber: formData.mobileNumber,
+        email: formData.email,
+        address: formData.address,
+        receiptNumber: formData.receiptNumber,
+        receiptDate: formData.receiptDate,
+        image: imageBase64,
+        imageName: imageFile.name,
+        qnaAnswer: formData.qnaAnswer,
+        timestamp: new Date().toISOString()
+      };
+
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submissionData)
+      });
+
+      toast.success('Form submitted successfully!');
+      setFormData({
+        segment: '',
+        fullName: '',
+        nric: '',
+        mobileNumber: '',
+        email: '',
+        address: '',
+        receiptNumber: '',
+        receiptDate: '',
+        qnaAnswer: '',
+        termsAccepted: false,
+        ageConfirmed: true,
+        marketingConsent: false
+      });
+      setImageFile(null);
+      setImagePreview(null);
+      setReceiptExists(false);
+      document.getElementById('image-upload').value = '';
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Error submitting form. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchSubmissionsByMobileNumber = async (mobileNumber) => {
+    if (!mobileNumber || mobileNumber.length > 11) {
+      toast.error('Please enter a valid mobile number (max 11 digits)');
+      return;
+    }
     setLoadingSubmissions(true);
     try {
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getSubmissionsByMobileNumber&mobileNumber=${mobileNumber}`);
       const data = await response.json();
-
       if (data.result === 'success') {
         setSubmissions(data.data);
         if (data.data.length === 0) {
@@ -96,173 +206,17 @@ const FormComponent = () => {
     }
   };
 
-  const handleTrackSubmissions = () => {
-    fetchSubmissionsByMobileNumber(trackingMobileNumber);
-  };
-
-  // Debounced receipt number validation
-  const checkReceiptNumberExists = useCallback(async (receiptNumber) => {
-    if (!receiptNumber || receiptNumber.trim() === '') {
-      setReceiptExists(false);
-      setCheckingReceipt(false);
-      return;
-    }
-
-    setCheckingReceipt(true);
-    try {
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=checkReceiptNumber&receiptNumber=${encodeURIComponent(receiptNumber)}`);
-      const data = await response.json();
-
-      console.log('Receipt check response:', data);
-
-      if (data.result === 'success') {
-        setReceiptExists(data.exists);
-      }
-    } catch (error) {
-      console.error('Error checking receipt number:', error);
-    } finally {
-      setCheckingReceipt(false);
-    }
-  }, [GOOGLE_SCRIPT_URL]);
-
-  // Effect to check receipt number with debounce
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      checkReceiptNumberExists(formData.receiptNumber);
-    }, 500); // 500ms debounce
-
-    return () => clearTimeout(timeoutId);
-  }, [formData.receiptNumber, checkReceiptNumberExists]);
-
-  // Check if all required fields are filled
-  const isFormValid = () => {
-    return (
-      formData.segment &&
-      formData.fullName &&
-      formData.nric &&
-      formData.mobileNumber &&
-      formData.email &&
-      formData.receiptNumber &&
-      formData.receiptDate &&
-      formData.qnaAnswer &&
-      formData.termsAccepted &&
-      imageFile &&
-      !receiptExists &&
-      !checkingReceipt
-    );
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validate all required fields
-    if (!formData.segment || !formData.fullName || !formData.nric || !formData.mobileNumber ||
-        !formData.email || !formData.receiptNumber || !formData.receiptDate || !formData.qnaAnswer) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    // Check if receipt number already exists
-    if (receiptExists) {
-      toast.error('This receipt number has already been submitted');
-      return;
-    }
-
-    if (!imageFile) {
-      toast.error('Please upload a receipt image');
-      return;
-    }
-
-    if (!formData.termsAccepted) {
-      toast.error('Please accept the Terms & Conditions');
-      return;
-    }
-
-    // Validate NRIC format (12 digits)
-    const nricRegex = /^\d{12}$/;
-    if (!nricRegex.test(formData.nric)) {
-      toast.error('NRIC must be 12 digits (format: 000000112222)');
-      return;
-    }
-
-    // Validate mobile number format (max 12 characters)
-    if (formData.mobileNumber.length > 12) {
-      toast.error('Mobile number cannot exceed 12 characters');
-      return;
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast.error('Please enter a valid email address');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      // Convert image to base64
-      const imageBase64 = await convertImageToBase64(imageFile);
-
-      // Prepare data for Google Sheets
-      const submissionData = {
-        segment: formData.segment,
-        fullName: formData.fullName,
-        nric: formData.nric,
-        mobileNumber: formData.mobileNumber,
-        email: formData.email,
-        receiptNumber: formData.receiptNumber,
-        receiptDate: formData.receiptDate,
-        image: imageBase64,
-        imageName: imageFile.name,
-        qnaAnswer: formData.qnaAnswer,
-        timestamp: new Date().toISOString()
-      };
-
-      // Submit to Google Apps Script
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submissionData)
-      });
-
-      // Note: with 'no-cors' mode, we can't read the response
-      // Assume success if no error is thrown
-      toast.success('Form submitted successfully!');
-
-      // Reset form
-      setFormData({
-        segment: '',
-        fullName: '',
-        nric: '',
-        mobileNumber: '',
-        email: '',
-        receiptNumber: '',
-        receiptDate: '',
-        qnaAnswer: '',
-        termsAccepted: false
-      });
-      setImageFile(null);
-      setImagePreview(null);
-      setReceiptExists(false);
-      setCheckingReceipt(false);
-
-      // Reset file input
-      document.getElementById('image-upload').value = '';
-
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      toast.error('Error submitting form. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <>
+    <div style={{
+      backgroundImage: 'url(/Background.png)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundColor: '#F5F0E8',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -275,351 +229,423 @@ const FormComponent = () => {
         pauseOnHover
         theme="light"
       />
-      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-          Form Submission
-        </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Segment */}
-        <div>
-          <label htmlFor="segment" className="block text-sm font-medium text-gray-700 mb-2">
-            Segment <span className="text-red-500">*</span>
-          </label>
-          <select
-            id="segment"
-            name="segment"
-            value={formData.segment}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-          >
-            <option value="">Select a segment</option>
-            <option value="Supermarket">Supermarket</option>
-            <option value="Convenience Store">Convenience Store</option>
-            <option value="Ecomm(Shopee/Lazada)">Ecomm(Shopee/Lazada)</option>
-          </select>
-        </div>
-
-        {/* Full Name */}
-        <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
-            Full Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="fullName"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-            placeholder="Enter your full name"
-          />
-        </div>
-
-        {/* NRIC */}
-        <div>
-          <label htmlFor="nric" className="block text-sm font-medium text-gray-700 mb-2">
-            NRIC <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="nric"
-            name="nric"
-            value={formData.nric}
-            onChange={handleInputChange}
-            required
-            maxLength="12"
-            pattern="\d{12}"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-            placeholder="000000112222"
-          />
-          <p className="mt-1 text-sm text-gray-500">Example: 112233005555</p>
-        </div>
-
-        {/* Mobile Number */}
-        <div>
-          <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700 mb-2">
-            Mobile Number <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="mobileNumber"
-            name="mobileNumber"
-            value={formData.mobileNumber}
-            onChange={handleInputChange}
-            required
-            maxLength="12"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-            placeholder="0122223333"
-          />
-          <p className="mt-1 text-sm text-gray-500">Maximum 12 characters</p>
-        </div>
-
-        {/* Email Address */}
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-            Email Address <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-            placeholder="someone@gmail.com"
-          />
-        </div>
-
-        {/* Receipt Number */}
-        <div>
-          <label htmlFor="receiptNumber" className="block text-sm font-medium text-gray-700 mb-2">
-            Receipt Number <span className="text-red-500">*</span>
-          </label>
-          <div className="mb-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-md">
-            <p className="text-sm text-yellow-800">
-              <span className="font-semibold">Important:</span> One receipt can only be submitted once. Duplicate receipt submissions will be ignored.
-            </p>
-          </div>
-          <div className="relative">
-            <input
-              type="text"
-              id="receiptNumber"
-              name="receiptNumber"
-              value={formData.receiptNumber}
-              onChange={handleInputChange}
-              required
-              className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:border-transparent outline-none transition ${
-                receiptExists
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-blue-500'
+      {/* Sub Navigation */}
+      <div style={{ backgroundColor: '#F5F0E8', borderBottom: '2px solid #E5B746' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center space-x-8 h-16">
+            <button
+              onClick={() => setActiveTab('submit')}
+              className={`px-6 py-2 font-bold text-lg transition ${
+                activeTab === 'submit' ? 'text-black' : 'text-gray-400'
               }`}
-              placeholder="Enter receipt number"
-            />
-            {checkingReceipt && (
-              <div className="absolute right-3 top-2.5">
-                <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </div>
-            )}
+              style={{ fontStyle: activeTab === 'submit' ? 'italic' : 'normal' }}
+            >
+              SUBMIT NOW
+            </button>
+            <button
+              onClick={() => setActiveTab('tracker')}
+              className={`px-6 py-2 font-bold text-lg transition ${
+                activeTab === 'tracker' ? 'text-black' : 'text-gray-400'
+              }`}
+              style={{ fontStyle: activeTab === 'tracker' ? 'italic' : 'normal' }}
+            >
+              ENTRY TRACKER
+            </button>
+            <button
+              onClick={() => setActiveTab('faq')}
+              className={`px-6 py-2 font-bold text-lg transition ${
+                activeTab === 'faq' ? 'text-black' : 'text-gray-400'
+              }`}
+              style={{ fontStyle: activeTab === 'faq' ? 'italic' : 'normal' }}
+            >
+              FAQ
+            </button>
           </div>
-          {receiptExists && (
-            <p className="mt-2 text-sm text-red-600 flex items-start">
-              <svg className="h-5 w-5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-              <span className="font-semibold">Invalid:</span>&nbsp;This receipt number has been submitted previously.
-            </p>
-          )}
         </div>
+      </div>
 
-        {/* Receipt Date */}
-        <div>
-          <label htmlFor="receiptDate" className="block text-sm font-medium text-gray-700 mb-2">
-            Receipt Date <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="date"
-            id="receiptDate"
-            name="receiptDate"
-            value={formData.receiptDate}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-          />
-        </div>
+      <div className="max-w-4xl mx-auto px-4 py-12" style={{ flex: '1 0 auto' }}>
+        {/* SUBMIT NOW TAB */}
+        {activeTab === 'submit' && (
+          <div>
+            <h1 className="text-5xl font-bold text-center mb-12" style={{
+              fontFamily: 'cursive',
+              color: '#E5B746'
+            }}>
+              SUBMIT RECEIPT
+            </h1>
 
-        {/* Upload Receipt */}
-        <div>
-          <label htmlFor="image-upload" className="block text-sm font-medium text-gray-700 mb-2">
-            Upload Receipt <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="file"
-            id="image-upload"
-            accept="image/*"
-            onChange={handleImageChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-          />
-          <p className="mt-1 text-sm text-gray-500">Max file size: 5MB</p>
-        </div>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Segment */}
+              <div>
+                <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                  SEGMENT<span className="text-red-600">*</span>
+                </label>
+                <select
+                  name="segment"
+                  value={formData.segment}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                  style={{ fontStyle: 'italic' }}
+                >
+                  <option value="">Choose your segment</option>
+                  <option value="Supermarket">Supermarket</option>
+                  <option value="Convenience Store">Convenience Store</option>
+                  <option value="Ecomm(Shopee/Lazada)">Ecomm(Shopee/Lazada)</option>
+                </select>
+              </div>
 
-        {/* Image Preview */}
-        {imagePreview && (
-          <div className="mt-4">
-            <p className="text-sm font-medium text-gray-700 mb-2">Receipt Preview:</p>
-            <img
-              src={imagePreview}
-              alt="Receipt Preview"
-              className="max-w-full h-auto max-h-64 rounded-md border border-gray-300"
-            />
+              {/* Full Name and NRIC */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                    FULL NAME (AS PER IC)<span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter your Name"
+                    className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                    style={{ fontStyle: 'italic' }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                    NRIC<span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="nric"
+                    value={formData.nric}
+                    onChange={handleInputChange}
+                    required
+                    maxLength="12"
+                    placeholder="Eg.970909145222"
+                    className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                    style={{ fontStyle: 'italic' }}
+                  />
+                </div>
+              </div>
+
+              {/* Phone and Email */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                    PHONE NUMBER<span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="mobileNumber"
+                    value={formData.mobileNumber}
+                    onChange={handleInputChange}
+                    required
+                    maxLength="12"
+                    placeholder="Eg. +60 123 456 7890"
+                    className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                    style={{ fontStyle: 'italic' }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                    EMAIL ADDRESS<span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Choose your segment"
+                    className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                    style={{ fontStyle: 'italic' }}
+                  />
+                </div>
+              </div>
+
+              {/* Address */}
+              <div>
+                <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                  ADDRESS<span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="Enter your address"
+                  className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                  style={{ fontStyle: 'italic' }}
+                />
+              </div>
+
+              {/* Receipt Number and Date */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                    RECEIPT NUMBER<span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="receiptNumber"
+                    value={formData.receiptNumber}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter your receipt number"
+                    className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                    style={{ fontStyle: 'italic' }}
+                  />
+                  {receiptExists && (
+                    <p className="mt-2 text-sm text-red-600">This receipt has been submitted</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                    RECEIPT DATE<span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="receiptDate"
+                    value={formData.receiptDate}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="dd/mm/yyy"
+                    className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                    style={{ fontStyle: 'italic' }}
+                  />
+                </div>
+              </div>
+
+              {/* Upload Image */}
+              <div>
+                <label className="block text-base font-bold mb-4" style={{ color: '#000' }}>
+                  PROOF OF PURCHASE<span className="text-red-600">*</span>
+                </label>
+                <label
+                  htmlFor="image-upload"
+                  className="w-full py-6 flex items-center justify-center font-bold text-2xl text-white cursor-pointer rounded-lg shadow-lg transition"
+                  style={{
+                    background: 'linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)'
+                  }}
+                >
+                  UPLOAD IMAGE
+                  <svg className="w-8 h-8 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                </label>
+                <input
+                  type="file"
+                  id="image-upload"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  required
+                  className="hidden"
+                />
+                {imagePreview && (
+                  <div className="mt-4">
+                    <img src={imagePreview} alt="Preview" className="max-w-full h-auto max-h-64 rounded-md" />
+                  </div>
+                )}
+              </div>
+
+              {/* Terms */}
+              <div>
+                <h3 className="text-xl font-bold mb-4" style={{ color: '#000' }}>TERMS AND CONDITIONS</h3>
+                <div className="space-y-3">
+                  <label className="flex items-start cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.ageConfirmed}
+                      readOnly
+                      className="mt-1 h-5 w-5 rounded"
+                      style={{ accentColor: '#E5B746' }}
+                    />
+                    <span className="ml-3 text-sm">
+                      <span className="text-red-600">*</span> I acknowledge that I'm a non-Muslim, aged 21 and above.
+                    </span>
+                  </label>
+                  <label className="flex items-start cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.termsAccepted}
+                      onChange={(e) => setFormData(prev => ({ ...prev, termsAccepted: e.target.checked }))}
+                      className="mt-1 h-5 w-5 rounded"
+                    />
+                    <span className="ml-3 text-sm">
+                      <span className="text-red-600">*</span> I agree to the <u>Terms & Conditions</u> and <u>Privacy Policy</u>.
+                    </span>
+                  </label>
+                  <label className="flex items-start cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.marketingConsent}
+                      onChange={(e) => setFormData(prev => ({ ...prev, marketingConsent: e.target.checked }))}
+                      className="mt-1 h-5 w-5 rounded"
+                    />
+                    <span className="ml-3 text-sm">
+                      <span className="text-red-600">*</span> I consent to receiving Kirin Ichiban marketing and promotional message /email.
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Question */}
+              <div>
+                <h3 className="text-xl font-bold mb-4" style={{ color: '#000' }}>QUESTION ABOUT KIRIN ICHIBAN</h3>
+                <p className="mb-4 font-semibold" style={{ fontStyle: 'italic' }}>
+                  <span className="text-red-600">*</span>Where does Kirin Ichiban originally come from?
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {['CHINA', 'SOUTH KOREA', 'JAPAN', 'SINGAPORE'].map((country) => (
+                    <label key={country} className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="qnaAnswer"
+                        value={country}
+                        checked={formData.qnaAnswer === country}
+                        onChange={handleInputChange}
+                        className="h-5 w-5"
+                        style={{ accentColor: '#E5B746' }}
+                      />
+                      <span className="ml-2 font-semibold">{country}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-center pt-8">
+                <button
+                  type="submit"
+                  disabled={loading || receiptExists}
+                  className="px-12 py-4 font-bold text-2xl text-white rounded-full shadow-lg transition disabled:opacity-50"
+                  style={{
+                    background: 'linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)'
+                  }}
+                >
+                  {loading ? 'SUBMITTING...' : 'SUBMIT RECEIPT'}
+                </button>
+              </div>
+            </form>
           </div>
         )}
 
-        {/* QnA */}
-        <div>
-          <label htmlFor="qnaAnswer" className="block text-sm font-medium text-gray-700 mb-2">
-            Where does Kirin Ichiban originally come from? <span className="text-red-500">*</span>
-          </label>
-          <select
-            id="qnaAnswer"
-            name="qnaAnswer"
-            value={formData.qnaAnswer}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-          >
-            <option value="">Select an answer</option>
-            <option value="China">China</option>
-            <option value="South Korea">South Korea</option>
-            <option value="Japan">Japan</option>
-            <option value="Singapore">Singapore</option>
-          </select>
-        </div>
+        {/* ENTRY TRACKER TAB */}
+        {activeTab === 'tracker' && (
+          <div>
+            <h1 className="text-3xl font-bold text-center mb-8" style={{ color: '#000' }}>
+              ENTER YOUR MOBILE NUMBER AND TRACK YOUR ENTRY STATUS
+            </h1>
+            <div className="max-w-2xl mx-auto">
+              <label className="block text-base font-bold mb-4" style={{ color: '#000' }}>
+                MOBILE NUMBER<span className="text-red-600">*</span>
+              </label>
+              <input
+                type="text"
+                value={trackingMobileNumber}
+                onChange={(e) => setTrackingMobileNumber(e.target.value)}
+                maxLength="11"
+                placeholder="Enter mobile number (max 11 digits)"
+                className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none text-gray-400"
+                style={{ fontStyle: 'italic' }}
+              />
+              <div className="flex justify-center mt-8">
+                <button
+                  onClick={() => fetchSubmissionsByMobileNumber(trackingMobileNumber)}
+                  disabled={loadingSubmissions}
+                  className="px-12 py-4 font-bold text-2xl text-white rounded-full shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)' }}
+                >
+                  {loadingSubmissions ? 'LOADING...' : 'TRACK MY ENTRY'}
+                </button>
+              </div>
 
-        {/* Terms & Conditions */}
-        <div className="flex items-start">
-          <input
-            type="checkbox"
-            id="termsAccepted"
-            name="termsAccepted"
-            checked={formData.termsAccepted}
-            onChange={(e) => setFormData(prev => ({ ...prev, termsAccepted: e.target.checked }))}
-            required
-            className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-          />
-          <label htmlFor="termsAccepted" className="ml-2 text-sm text-gray-700">
-            I accept the{' '}
-            <span
-              className="text-blue-600 hover:text-blue-800 cursor-pointer underline"
-              title="Terms & Conditions: By participating in this promotion, you agree to provide accurate information. Winners will be selected based on the criteria set by the organizers. Personal data collected will be used solely for this promotion and will be handled in accordance with privacy regulations. The organizers reserve the right to modify or terminate the promotion at any time."
-            >
-              Terms & Conditions
-            </span>{' '}
-            <span className="text-red-500">*</span>
-          </label>
-        </div>
+              {submissions.length > 0 && (
+                <div className="mt-12 overflow-x-auto">
+                  <table className="min-w-full" style={{ backgroundColor: '#E5B746' }}>
+                    <thead>
+                      <tr>
+                        <th className="px-6 py-3 text-left text-sm font-bold">MOBILE NUMBER</th>
+                        <th className="px-6 py-3 text-left text-sm font-bold">Name</th>
+                        <th className="px-6 py-3 text-left text-sm font-bold">Date of Submission</th>
+                        <th className="px-6 py-3 text-left text-sm font-bold">Receipt Number</th>
+                        <th className="px-6 py-3 text-left text-sm font-bold">Submission Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white">
+                      {submissions.map((sub, idx) => (
+                        <tr key={idx}>
+                          <td className="px-6 py-4 text-sm">{sub.mobileNumber}</td>
+                          <td className="px-6 py-4 text-sm">{sub.name}</td>
+                          <td className="px-6 py-4 text-sm">{new Date(sub.dateOfSubmission).toLocaleDateString()}</td>
+                          <td className="px-6 py-4 text-sm">{sub.receiptNumber}</td>
+                          <td className="px-6 py-4 text-sm">{sub.submissionStatus}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={loading || !isFormValid()}
-          className={`w-full py-3 px-4 rounded-md font-semibold text-white transition flex items-center justify-center ${
-            loading || !isFormValid()
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300'
-          }`}
-        >
-          {loading ? (
-            <>
-              <svg
-                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Submitting...
-            </>
-          ) : (
-            'Submit Form'
-          )}
-        </button>
-      </form>
-
-      {/* Entry Tracker Section */}
-      <div className="mt-12 pt-8 border-t border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Entry Tracker</h2>
-        <p className="text-gray-600 mb-4">Track your submissions by entering your Mobile Number</p>
-
-        <div className="flex gap-3 mb-6">
-          <input
-            type="text"
-            value={trackingMobileNumber}
-            onChange={(e) => setTrackingMobileNumber(e.target.value)}
-            maxLength="12"
-            placeholder="Mobile Number (e.g., 0123456789)"
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-          />
-          <button
-            onClick={handleTrackSubmissions}
-            disabled={loadingSubmissions}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 disabled:bg-gray-400 transition"
-          >
-            {loadingSubmissions ? 'Loading...' : 'Track'}
-          </button>
-        </div>
-
-        {submissions.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300 rounded-lg">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                    Mobile Number
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                    Date of Submission
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                    Receipt Number
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                    Submission Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {submissions.map((submission, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {submission.mobileNumber}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {submission.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(submission.dateOfSubmission).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {submission.receiptNumber}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        {submission.submissionStatus}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* FAQ TAB */}
+        {activeTab === 'faq' && (
+          <div>
+            <h1 className="text-4xl font-bold text-center mb-12" style={{ color: '#000' }}>
+              FREQUENTLY ASKED QUESTIONS
+            </h1>
+            <div className="max-w-3xl mx-auto space-y-8">
+              <div>
+                <h3 className="text-xl font-bold mb-2" style={{ color: '#000' }}>
+                  Who can participate in the Kirin Spend to Win Campaign?
+                </h3>
+                <p className="text-gray-700 italic">
+                  The promotions are open to all non-Muslim residents in Malaysia aged 21 years and above. All entries are subject to terms and conditions. Please refer to T&Cs for more information.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2" style={{ color: '#000' }}>
+                  Can I participate if I live in East Malaysia?
+                </h3>
+                <p className="text-gray-700 italic">
+                  No, the campaign only available for West Malaysia.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2" style={{ color: '#000' }}>
+                  Lorem Ipsum
+                </h3>
+                <p className="text-gray-700 italic">
+                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2" style={{ color: '#000' }}>
+                  Lorem Ipsum
+                </h3>
+                <p className="text-gray-700 italic">
+                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet.
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <div className="py-6 text-center" style={{ backgroundColor: '#E5B746', flexShrink: 0, marginTop: 'auto' }}>
+        <p className="text-black font-bold">
+          TERMS & CONDITION APPLIES  •  PRIVACY POLICY
+        </p>
+      </div>
     </div>
-    </>
   );
 };
 
