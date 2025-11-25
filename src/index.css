@@ -5,7 +5,7 @@
 /* Custom Fonts */
 @font-face {
   font-family: 'BebasNeue';
-  src: url('./fonts/BebasNeue\ Bold.ttf') format('truetype');
+  src: url('./fonts/BebasNeue Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
