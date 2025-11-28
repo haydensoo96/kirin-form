@@ -265,7 +265,7 @@ const FormComponent = () => {
         {activeTab === 'submit' && (
           <div>
             <h1 className="text-5xl font-bold text-center mb-12" style={{
-              fontFamily: 'cursive',
+              fontFamily: 'BebasNeue, Arial, sans-serif',
               color: '#E5B746'
             }}>
               SUBMIT RECEIPT
@@ -355,7 +355,7 @@ const FormComponent = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    placeholder="Choose your segment"
+                    placeholder="Enter your email address"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
                     style={{ fontStyle: 'italic' }}
                   />

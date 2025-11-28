@@ -66,7 +66,7 @@ const Home = ({ onNavigateToForm }) => {
       {/* Lorem Ipsum Section */}
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
         <h2 className="text-5xl font-bold mb-6" style={{
-          fontFamily: 'cursive',
+          fontFamily: 'BebasNeue, Arial, sans-serif',
           color: '#000'
         }}>
           LOREM IPSUM
