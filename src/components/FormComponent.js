@@ -15,7 +15,7 @@ const FormComponent = () => {
     receiptDate: '',
     qnaAnswer: '',
     termsAccepted: false,
-    ageConfirmed: true,
+    ageConfirmed: false,
     marketingConsent: false
   });
   const [imageFile, setImageFile] = useState(null);
@@ -161,7 +161,7 @@ const FormComponent = () => {
         receiptDate: '',
         qnaAnswer: '',
         termsAccepted: false,
-        ageConfirmed: true,
+        ageConfirmed: false,
         marketingConsent: false
       });
       setImageFile(null);
@@ -456,7 +456,7 @@ const FormComponent = () => {
                     <input
                       type="checkbox"
                       checked={formData.ageConfirmed}
-                      readOnly
+                      onChange={(e) => setFormData(prev => ({ ...prev, ageConfirmed: e.target.checked }))}
                       className="mt-1 h-5 w-5 rounded"
                       style={{ accentColor: '#E5B746' }}
                     />
@@ -636,7 +636,7 @@ const FormComponent = () => {
 
       {/* Footer */}
       <div className="py-6 text-center" style={{ backgroundColor: '#E5B746', flexShrink: 0, marginTop: 'auto' }}>
-        <p className="text-black font-bold">
+        <p className="text-black font-bold text-[10px] sm:text-sm lg:text-base">
           TERMS & CONDITION APPLIES  •  PRIVACY POLICY
         </p>
       </div>

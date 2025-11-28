@@ -102,13 +102,6 @@ const Home = ({ onNavigateToForm }) => {
 
       {/* Winner List Section */}
       <div className="max-w-6xl mx-auto px-4 py-16">
-        <h2 className="text-5xl font-bold text-center mb-12" style={{
-          fontFamily: 'cursive',
-          color: '#000'
-        }}>
-          WINNER LIST
-        </h2>
-
         {loading ? (
           <div className="flex justify-center items-center py-12">
             <svg
@@ -143,26 +136,43 @@ const Home = ({ onNavigateToForm }) => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {winners.slice(0, 6).map((winner, index) => (
-              <div key={index} className="flex items-center">
-                <div className="flex-shrink-0 w-20 h-20 rounded-full bg-white border-4 flex items-center justify-center mr-4 shadow-lg" style={{ borderColor: '#E5B746' }}>
-                  <span className="text-3xl font-bold">{index + 1}</span>
-                </div>
-                <div className="flex-1 py-4 px-6 rounded-lg shadow-md" style={{
-                  background: 'linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)'
-                }}>
-                  <p className="text-white font-semibold text-lg">{winner.name}</p>
-                </div>
+          <div style={{
+            borderRadius: '16px',
+            overflow: 'hidden',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          }}>
+            {/* Header */}
+            <div style={{
+              background: 'linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)',
+              padding: '20px 16px',
+              textAlign: 'center'
+            }}>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">WINNER LIST</h2>
+            </div>
+
+            {/* Content */}
+            <div style={{
+              backgroundColor: '#F5F0E8',
+              padding: '24px 16px',
+              minHeight: '400px'
+            }}>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 max-w-[1200px] mx-auto">
+                {winners.map((winner, idx) => (
+                  <div key={idx} className="font-bold text-xs sm:text-sm lg:text-base text-center" style={{
+                    color: '#000'
+                  }}>
+                    {winner.name}
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         )}
       </div>
 
       {/* Footer */}
       <div className="py-6 text-center" style={{ backgroundColor: '#E5B746' }}>
-        <p className="text-black font-bold">
+        <p className="text-black font-bold text-[10px] sm:text-sm lg:text-base">
           TERMS & CONDITION APPLIES  •  PRIVACY POLICY
         </p>
       </div>
