@@ -472,7 +472,26 @@ const FormComponent = () => {
                       className="mt-1 h-5 w-5 rounded"
                     />
                     <span className="ml-3 text-sm">
-                      <span className="text-red-600">*</span> I agree to the <u>Terms & Conditions</u> and <u>Privacy Policy</u>.
+                      <span className="text-red-600">*</span> I agree to the{' '}
+                      <a
+                        href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-blue-600"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Terms & Conditions
+                      </a>
+                      {' '}and{' '}
+                      <a
+                        href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-blue-600"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Privacy Policy
+                      </a>.
                     </span>
                   </label>
                   <label className="flex items-start cursor-pointer">
@@ -637,7 +656,23 @@ const FormComponent = () => {
       {/* Footer */}
       <div className="py-6 text-center" style={{ backgroundColor: '#E5B746', flexShrink: 0, marginTop: 'auto' }}>
         <p className="text-black font-bold text-[10px] sm:text-sm lg:text-base">
-          TERMS & CONDITION APPLIES  •  PRIVACY POLICY
+          <a
+            href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            TERMS & CONDITION APPLIES
+          </a>
+          {' '} • {' '}
+          <a
+            href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            PRIVACY POLICY
+          </a>
         </p>
       </div>
     </div>

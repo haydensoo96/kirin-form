@@ -173,7 +173,23 @@ const Home = ({ onNavigateToForm }) => {
       {/* Footer */}
       <div className="py-6 text-center" style={{ backgroundColor: '#E5B746' }}>
         <p className="text-black font-bold text-[10px] sm:text-sm lg:text-base">
-          TERMS & CONDITION APPLIES  •  PRIVACY POLICY
+          <a
+            href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            TERMS & CONDITION APPLIES
+          </a>
+          {' '} • {' '}
+          <a
+            href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            PRIVACY POLICY
+          </a>
         </p>
       </div>
     </div>
