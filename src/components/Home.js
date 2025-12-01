@@ -70,7 +70,7 @@ const Home = ({ onNavigateToForm }) => {
       {/* Lorem Ipsum Section */}
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
         <h2
-          className="text-5xl font-bold mb-6"
+          className="text-xl sm:text-3xl lg:text-5xl font-bold mb-6"
           style={{
             fontFamily: "'Crimson Text', serif",
             color: "#F68B1F",
@@ -78,11 +78,11 @@ const Home = ({ onNavigateToForm }) => {
         >
           PROSPERITY BEGINS WITH KIRIN ICHIBAN
         </h2>
-        <p className="text-lg mb-4" style={{ color: "#E5B746" }}>
+        <p className="text-sm sm:text-base lg:text-lg mb-4" style={{ color: "#E5B746" }}>
           Celebrate meaningful moments with a chance to win our Limited-Edition
           Kirin Ichiban Mah Jong Set.
         </p>
-        <p className="text-base leading-relaxed" style={{ color: "#000" }}>
+        <p className="text-xs sm:text-sm lg:text-base leading-relaxed" style={{ color: "#000" }}>
           Step into the festive season with a celebration made for togetherness.
           This Chinese New Year, let Kirin Ichiban be the taste that completes
           your reunions, your celebrations, and the moments that matter most.
@@ -125,7 +125,7 @@ const Home = ({ onNavigateToForm }) => {
       {/* Winner List Section */}
       <div className="max-w-6xl mx-auto px-4 py-16">
         <h2
-          className="text-5xl font-bold text-center mb-12"
+          className="text-xl sm:text-3xl lg:text-5xl font-bold text-center mb-12"
           style={{
             fontFamily: "'Crimson Text', serif",
             color: "#F68B1F",
@@ -160,10 +160,10 @@ const Home = ({ onNavigateToForm }) => {
           </div>
         ) : winners.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-xl font-medium" style={{ color: "#000" }}>
+            <p className="text-base sm:text-lg lg:text-xl font-medium" style={{ color: "#000" }}>
               Winners will be released soon
             </p>
-            <p className="text-gray-600 mt-2">
+            <p className="text-xs sm:text-sm lg:text-base text-gray-600 mt-2">
               Stay tuned for the announcement!
             </p>
           </div>
@@ -183,7 +183,7 @@ const Home = ({ onNavigateToForm }) => {
                 textAlign: "center",
               }}
             >
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+              <h2 className="text-base sm:text-xl lg:text-2xl font-bold text-white">
                 WINNER LIST
               </h2>
             </div>

@@ -448,7 +448,7 @@ const FormComponent = () => {
         {activeTab === "submit" && (
           <div>
             <h1
-              className="text-5xl font-bold text-center mb-12"
+              className="text-xl sm:text-3xl lg:text-5xl font-bold text-center mb-12"
               style={{
                 fontFamily: "'Crimson Text', serif",
                 color: "#F68B1F",
@@ -461,7 +461,7 @@ const FormComponent = () => {
               {/* Segment */}
               <div>
                 <label
-                  className="block text-base font-bold mb-2"
+                  className="block text-sm sm:text-base font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   SEGMENT<span className="text-red-600">*</span>
@@ -486,7 +486,7 @@ const FormComponent = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                   <label
-                    className="block text-base font-bold mb-2"
+                    className="block text-sm sm:text-base font-bold mb-2"
                     style={{ color: "#000" }}
                   >
                     FULL NAME (AS PER IC)<span className="text-red-600">*</span>
@@ -503,7 +503,7 @@ const FormComponent = () => {
                 </div>
                 <div>
                   <label
-                    className="block text-base font-bold mb-2"
+                    className="block text-sm sm:text-base font-bold mb-2"
                     style={{ color: "#000" }}
                   >
                     NRIC<span className="text-red-600">*</span>
@@ -525,7 +525,7 @@ const FormComponent = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                   <label
-                    className="block text-base font-bold mb-2"
+                    className="block text-sm sm:text-base font-bold mb-2"
                     style={{ color: "#000" }}
                   >
                     PHONE NUMBER<span className="text-red-600">*</span>
@@ -542,7 +542,7 @@ const FormComponent = () => {
                 </div>
                 <div>
                   <label
-                    className="block text-base font-bold mb-2"
+                    className="block text-sm sm:text-base font-bold mb-2"
                     style={{ color: "#000" }}
                   >
                     EMAIL ADDRESS<span className="text-red-600">*</span>
@@ -564,7 +564,7 @@ const FormComponent = () => {
                 {/* Address Line 1 */}
                 <div>
                   <label
-                    className="block text-base font-bold mb-2"
+                    className="block text-sm sm:text-base font-bold mb-2"
                     style={{ color: "#000" }}
                   >
                     ADDRESS<span className="text-red-600">*</span>
@@ -583,7 +583,7 @@ const FormComponent = () => {
                 {/* Address Line 2 */}
                 <div>
                   <label
-                    className="block text-base font-bold mb-2"
+                    className="block text-sm sm:text-base font-bold mb-2"
                     style={{ color: "#000" }}
                   >
                     ADDRESS 2
@@ -602,7 +602,7 @@ const FormComponent = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
                     <label
-                      className="block text-base font-bold mb-2"
+                      className="block text-sm sm:text-base font-bold mb-2"
                       style={{ color: "#000" }}
                     >
                       CITY<span className="text-red-600">*</span>
@@ -619,7 +619,7 @@ const FormComponent = () => {
                   </div>
                   <div>
                     <label
-                      className="block text-base font-bold mb-2"
+                      className="block text-sm sm:text-base font-bold mb-2"
                       style={{ color: "#000" }}
                     >
                       STATE/PROVINCE<span className="text-red-600">*</span>
@@ -639,7 +639,7 @@ const FormComponent = () => {
                 {/* Postal Code */}
                 <div>
                   <label
-                    className="block text-base font-bold mb-2"
+                    className="block text-sm sm:text-base font-bold mb-2"
                     style={{ color: "#000" }}
                   >
                     POSTAL/ZIP CODE<span className="text-red-600">*</span>
@@ -660,7 +660,7 @@ const FormComponent = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                   <label
-                    className="block text-base font-bold mb-2"
+                    className="block text-sm sm:text-base font-bold mb-2"
                     style={{ color: "#000" }}
                   >
                     RECEIPT NUMBER<span className="text-red-600">*</span>
@@ -682,7 +682,7 @@ const FormComponent = () => {
                 </div>
                 <div>
                   <label
-                    className="block text-base font-bold mb-2"
+                    className="block text-sm sm:text-base font-bold mb-2"
                     style={{ color: "#000" }}
                   >
                     RECEIPT DATE<span className="text-red-600">*</span>
@@ -709,7 +709,7 @@ const FormComponent = () => {
                 </label>
                 <label
                   htmlFor="image-upload"
-                  className="w-full py-6 flex items-center justify-center font-bold text-2xl text-white cursor-pointer rounded-lg shadow-lg transition"
+                  className="w-full py-4 sm:py-6 flex items-center justify-center font-bold text-base sm:text-xl lg:text-2xl text-white cursor-pointer rounded-lg shadow-lg transition"
                   style={{
                     background:
                       "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
@@ -771,7 +771,7 @@ const FormComponent = () => {
 
               <div>
                 <h3
-                  className="text-xl font-bold mb-4"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-4"
                   style={{ color: "#000" }}
                 >
                   Where does Kirin Ichiban originally come from?
@@ -792,7 +792,7 @@ const FormComponent = () => {
                           className="h-5 w-5 flex-shrink-0"
                           style={{ accentColor: "#E5B746" }}
                         />
-                        <span className="ml-3 font-semibold whitespace-nowrap">{country}</span>
+                        <span className="ml-3 text-xs sm:text-sm lg:text-base font-semibold whitespace-nowrap">{country}</span>
                       </label>
                     )
                   )}
@@ -802,7 +802,7 @@ const FormComponent = () => {
               {/* Terms */}
               <div>
                 <h3
-                  className="text-xl font-bold mb-4"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-4"
                   style={{ color: "#000" }}
                 >
                   TERMS AND CONDITIONS
@@ -821,7 +821,7 @@ const FormComponent = () => {
                       className="mt-1 h-5 w-5 rounded"
                       style={{ accentColor: "#E5B746" }}
                     />
-                    <span className="ml-3 text-sm">
+                    <span className="ml-3 text-xs sm:text-sm">
                       <span className="text-red-600">*</span> I acknowledge that
                       I'm a non-Muslim, aged 21 and above.
                     </span>
@@ -838,7 +838,7 @@ const FormComponent = () => {
                       }
                       className="mt-1 h-5 w-5 rounded"
                     />
-                    <span className="ml-3 text-sm">
+                    <span className="ml-3 text-xs sm:text-sm">
                       <span className="text-red-600">*</span> I agree to the{" "}
                       <a
                         href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
@@ -874,7 +874,7 @@ const FormComponent = () => {
                       }
                       className="mt-1 h-5 w-5 rounded"
                     />
-                    <span className="ml-3 text-sm">
+                    <span className="ml-3 text-xs sm:text-sm">
                       <span className="text-red-600">*</span> I consent to
                       receiving Kirin Ichiban marketing and promotional message
                       /email.
@@ -890,7 +890,7 @@ const FormComponent = () => {
                 <button
                   type="submit"
                   disabled={loading || receiptExists}
-                  className="px-12 py-4 font-bold text-2xl text-white rounded-full shadow-lg transition disabled:opacity-50"
+                  className="px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-white rounded-full shadow-lg transition disabled:opacity-50"
                   style={{
                     background:
                       "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
@@ -907,7 +907,7 @@ const FormComponent = () => {
         {activeTab === "tracker" && (
           <div>
             <h1
-              className="text-3xl font-bold text-center mb-8"
+              className="text-lg sm:text-2xl lg:text-3xl font-bold text-center mb-8"
               style={{
                 fontFamily: "'Crimson Text', serif",
                 color: "#F68B1F"
@@ -936,7 +936,7 @@ const FormComponent = () => {
                     fetchSubmissionsByMobileNumber(trackingMobileNumber)
                   }
                   disabled={loadingSubmissions}
-                  className="px-12 py-4 font-bold text-2xl text-white rounded-full shadow-lg"
+                  className="px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-white rounded-full shadow-lg"
                   style={{
                     background:
                       "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
@@ -954,19 +954,19 @@ const FormComponent = () => {
                   >
                     <thead>
                       <tr>
-                        <th className="px-6 py-3 text-left text-sm font-bold">
+                        <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-bold">
                           MOBILE NUMBER
                         </th>
-                        <th className="px-6 py-3 text-left text-sm font-bold">
+                        <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-bold">
                           Name
                         </th>
-                        <th className="px-6 py-3 text-left text-sm font-bold">
+                        <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-bold">
                           Date of Submission
                         </th>
-                        <th className="px-6 py-3 text-left text-sm font-bold">
+                        <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-bold">
                           Receipt Number
                         </th>
-                        <th className="px-6 py-3 text-left text-sm font-bold">
+                        <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-bold">
                           Submission Status
                         </th>
                       </tr>
@@ -974,19 +974,19 @@ const FormComponent = () => {
                     <tbody className="bg-white">
                       {submissions.map((sub, idx) => (
                         <tr key={idx}>
-                          <td className="px-6 py-4 text-sm">
+                          <td className="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
                             {sub.mobileNumber}
                           </td>
-                          <td className="px-6 py-4 text-sm">{sub.name}</td>
-                          <td className="px-6 py-4 text-sm">
+                          <td className="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">{sub.name}</td>
+                          <td className="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
                             {new Date(
                               sub.dateOfSubmission
                             ).toLocaleDateString()}
                           </td>
-                          <td className="px-6 py-4 text-sm">
+                          <td className="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
                             {sub.receiptNumber}
                           </td>
-                          <td className="px-6 py-4 text-sm">
+                          <td className="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
                             {sub.submissionStatus}
                           </td>
                         </tr>
@@ -1003,7 +1003,7 @@ const FormComponent = () => {
         {activeTab === "faq" && (
           <div>
             <h1
-              className="text-4xl font-bold text-center mb-12"
+              className="text-xl sm:text-3xl lg:text-4xl font-bold text-center mb-12"
               style={{
                 fontFamily: "'Crimson Text', serif",
                 color: "#F68B1F"
@@ -1014,13 +1014,13 @@ const FormComponent = () => {
             <div className="max-w-3xl mx-auto space-y-8">
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   Who can participate in this Kirin Ichiban 2026 Chinese New
                   Year promotion?{" "}
                 </h3>
-                <p className="text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   This promotion is open to all non-Muslim residents of West
                   Malaysia aged 21 years and above. All entries must comply with
                   the official Terms & Conditions.{" "}
@@ -1028,24 +1028,24 @@ const FormComponent = () => {
               </div>
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   When is the contest period?{" "}
                 </h3>
-                <p className="text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   The Kirin Ichiban 2026 Chinese New Year promotion runs from
                   26th December 2025 – 1 st February 2026.{" "}
                 </p>
               </div>
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   How can I participate in this promotion?{" "}
                 </h3>
-                <div className="text-gray-700 italic space-y-3">
+                <div className="text-xs sm:text-sm lg:text-base text-gray-700 italic space-y-3">
                   <div>
                     <p className="font-semibold mb-2">
                       Mechanics / Minimum Spend:
@@ -1077,12 +1077,12 @@ const FormComponent = () => {
               </div>
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   How do I submit my receipt?{" "}
                 </h3>
-                <div className="text-gray-700 italic">
+                <div className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   <ol className="list-none space-y-2">
                     <li>
                       1) Scan the QR code found on the in-store point-of-sale
@@ -1101,25 +1101,25 @@ const FormComponent = () => {
               </div>
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   Can I combine multiple receipts to participate in the
                   promotion?
                 </h3>
-                <p className="text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   No. Each entry must be submitted using one single receipt
                   only.{" "}
                 </p>
               </div>
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   What receipts are considered valid?
                 </h3>
-                <p className="text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   Receipts must clearly show the store name, date, purchased
                   Kirin Ichiban products, price, and total amount. Handwritten
                   receipts, altered receipts, or unclear images will not be
@@ -1128,13 +1128,13 @@ const FormComponent = () => {
               </div>
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   Is there a limit to how many entries I can submit throughout
                   the campaign period?
                 </h3>
-                <p className="text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   There is no limit to the number of entries. Participants may
                   submit as many valid entries as they wish, as long as each
                   entry uses a different receipt and meets all Terms &
@@ -1143,24 +1143,24 @@ const FormComponent = () => {
               </div>
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   How do I check my entry status?
                 </h3>
-                <p className="text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   Participants may check their entry status via the mobile
                   number submitted at https://kirin-promotion.tongwohgroup.com/.
                 </p>
               </div>
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   How will I know if I am selected as a winner?
                 </h3>
-                <p className="text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   Winners will be announced on our official social media
                   channels: Instagram @kirinichibanmy and Facebook Kirin Ichiban
                   Malaysia. Participants may also check the winners list at
@@ -1169,37 +1169,37 @@ const FormComponent = () => {
               </div>
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   How will the prizes be delivered?
                 </h3>
-                <p className="text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   Winners will be contacted for delivery arrangements. Prizes
                   will be delivered only to addresses within West Malaysia.{" "}
                 </p>
               </div>
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   Can I transfer my prize to someone else?
                 </h3>
-                <p className="text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   No. All prizes are non-transferable, non-exchangeable, and
                   cannot be redeemed for cash or other alternatives.
                 </p>
               </div>
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   Are there any taxes or additional fees associated with the
                   prize?
                 </h3>
-                <p className="text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   No. The prize is not subject to additional taxes or fees.
                   Winners will receive the prize exactly as described in the
                   Terms & Conditions.
@@ -1207,12 +1207,12 @@ const FormComponent = () => {
               </div>
               <div>
                 <h3
-                  className="text-xl font-bold mb-2"
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
                   Who can I contact if I have more questions?{" "}
                 </h3>
-                <p className="text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   For further assistance, please email us at: enquiry@twe.my
                   Please do not forward this promotion to individuals below the
                   legal drinking age
