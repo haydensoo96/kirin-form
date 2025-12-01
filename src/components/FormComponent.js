@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "@fontsource/crimson-text/700.css"; // Bold weight
 
 const FormComponent = () => {
   const [activeTab, setActiveTab] = useState("submit");
@@ -426,7 +427,7 @@ const FormComponent = () => {
             <h1
               className="text-5xl font-bold text-center mb-12"
               style={{
-                fontFamily: "BebasNeue, Arial, sans-serif",
+                fontFamily: "'Crimson Text', serif",
                 color: "#F68B1F",
               }}
             >
@@ -884,7 +885,10 @@ const FormComponent = () => {
           <div>
             <h1
               className="text-3xl font-bold text-center mb-8"
-              style={{ color: "#F68B1F" }}
+              style={{
+                fontFamily: "'Crimson Text', serif",
+                color: "#F68B1F"
+              }}
             >
               ENTER YOUR MOBILE NUMBER AND TRACK YOUR ENTRY STATUS
             </h1>
@@ -978,7 +982,10 @@ const FormComponent = () => {
           <div>
             <h1
               className="text-4xl font-bold text-center mb-12"
-              style={{ color: "#F68B1F" }}
+              style={{
+                fontFamily: "'Crimson Text', serif",
+                color: "#F68B1F"
+              }}
             >
               FREQUENTLY ASKED QUESTIONS
             </h1>
