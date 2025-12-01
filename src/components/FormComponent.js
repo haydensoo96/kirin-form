@@ -59,6 +59,42 @@ const FormComponent = () => {
     let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
 
     if (value.length <= 8) {
+      // Validate day (01-31)
+      if (value.length >= 1) {
+        const firstDigit = parseInt(value[0]);
+        if (firstDigit > 3) {
+          value = '0' + value[0]; // Prepend 0 if first digit > 3
+        }
+      }
+      if (value.length >= 2) {
+        const day = parseInt(value.slice(0, 2));
+        if (day > 31 || day === 0) {
+          return; // Don't update if invalid day
+        }
+      }
+
+      // Validate month (01-12)
+      if (value.length >= 3) {
+        const monthFirstDigit = parseInt(value[2]);
+        if (monthFirstDigit > 1) {
+          return; // Don't allow month to start with digit > 1
+        }
+      }
+      if (value.length >= 4) {
+        const month = parseInt(value.slice(2, 4));
+        if (month > 12 || month === 0) {
+          return; // Don't update if invalid month
+        }
+      }
+
+      // Validate year (1950-2025)
+      if (value.length >= 8) {
+        const year = parseInt(value.slice(4, 8));
+        if (year < 1950 || year > 2025) {
+          return; // Don't update if invalid year
+        }
+      }
+
       // Auto-format as dd/mm/yyyy
       if (value.length >= 2) {
         value = value.slice(0, 2) + '/' + value.slice(2);
@@ -203,6 +239,13 @@ const FormComponent = () => {
     const day = parseInt(dateParts[0], 10);
     const month = parseInt(dateParts[1], 10);
     const year = parseInt(dateParts[2], 10);
+
+    // Check year range
+    if (year < 1950 || year > 2025) {
+      toast.error("Receipt year must be between 1950 and 2025");
+      return;
+    }
+
     const dateObj = new Date(year, month - 1, day);
 
     if (dateObj.getDate() !== day || dateObj.getMonth() !== month - 1 || dateObj.getFullYear() !== year) {
