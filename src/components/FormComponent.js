@@ -1214,10 +1214,15 @@ const FormComponent = () => {
                 </h3>
                 <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
                   For further assistance, please email us at: enquiry@twe.my
-                  Please do not forward this promotion to individuals below the
-                  legal drinking age
                 </p>
               </div>
+            </div>
+
+            {/* Notice Section */}
+            <div className="mt-12 text-center">
+              <p className="text-xs sm:text-sm lg:text-base font-bold" style={{ color: "#000" }}>
+                Please do not forward this promotion to individuals below the legal drinking age
+              </p>
             </div>
           </div>
         )}
