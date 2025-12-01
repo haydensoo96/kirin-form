@@ -1,47 +1,52 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState, useEffect, useCallback } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const FormComponent = () => {
-  const [activeTab, setActiveTab] = useState('submit');
+  const [activeTab, setActiveTab] = useState("submit");
   const [formData, setFormData] = useState({
-    segment: '',
-    fullName: '',
-    nric: '',
-    mobileNumber: '',
-    email: '',
-    address: '',
-    receiptNumber: '',
-    receiptDate: '',
-    qnaAnswer: '',
+    segment: "",
+    fullName: "",
+    nric: "",
+    mobileNumber: "",
+    email: "",
+    address1: "",
+    address2: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    receiptNumber: "",
+    receiptDate: "",
+    qnaAnswer: "",
     termsAccepted: false,
     ageConfirmed: false,
-    marketingConsent: false
+    marketingConsent: false,
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [submissions, setSubmissions] = useState([]);
-  const [trackingMobileNumber, setTrackingMobileNumber] = useState('');
+  const [trackingMobileNumber, setTrackingMobileNumber] = useState("");
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [receiptExists, setReceiptExists] = useState(false);
 
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuGP2d-UqG6pxqrScREnvfhF4d-s7QAzl-96itpFRfCbPLopyNxc3ojgA-DuA6GmAJ/exec';
+  const GOOGLE_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbyuGP2d-UqG6pxqrScREnvfhF4d-s7QAzl-96itpFRfCbPLopyNxc3ojgA-DuA6GmAJ/exec";
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please upload a valid image file');
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please upload a valid image file");
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size should be less than 5MB');
+        toast.error("Image size should be less than 5MB");
         return;
       }
       setImageFile(file);
@@ -60,21 +65,28 @@ const FormComponent = () => {
     });
   };
 
-  const checkReceiptNumberExists = useCallback(async (receiptNumber) => {
-    if (!receiptNumber || receiptNumber.trim() === '') {
-      setReceiptExists(false);
-      return;
-    }
-    try {
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=checkReceiptNumber&receiptNumber=${encodeURIComponent(receiptNumber)}`);
-      const data = await response.json();
-      if (data.result === 'success') {
-        setReceiptExists(data.exists);
+  const checkReceiptNumberExists = useCallback(
+    async (receiptNumber) => {
+      if (!receiptNumber || receiptNumber.trim() === "") {
+        setReceiptExists(false);
+        return;
       }
-    } catch (error) {
-      console.error('Error checking receipt number:', error);
-    }
-  }, [GOOGLE_SCRIPT_URL]);
+      try {
+        const response = await fetch(
+          `${GOOGLE_SCRIPT_URL}?action=checkReceiptNumber&receiptNumber=${encodeURIComponent(
+            receiptNumber
+          )}`
+        );
+        const data = await response.json();
+        if (data.result === "success") {
+          setReceiptExists(data.exists);
+        }
+      } catch (error) {
+        console.error("Error checking receipt number:", error);
+      }
+    },
+    [GOOGLE_SCRIPT_URL]
+  );
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -86,91 +98,116 @@ const FormComponent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.segment || !formData.fullName || !formData.nric || !formData.mobileNumber ||
-        !formData.email || !formData.address || !formData.receiptNumber || !formData.receiptDate || !formData.qnaAnswer) {
-      toast.error('Please fill in all required fields');
+    if (
+      !formData.segment ||
+      !formData.fullName ||
+      !formData.nric ||
+      !formData.mobileNumber ||
+      !formData.email ||
+      !formData.address1 ||
+      !formData.city ||
+      !formData.state ||
+      !formData.postalCode ||
+      !formData.receiptNumber ||
+      !formData.receiptDate ||
+      !formData.qnaAnswer
+    ) {
+      toast.error("Please fill in all required fields");
       return;
     }
 
     if (receiptExists) {
-      toast.error('This receipt number has already been submitted');
+      toast.error("This receipt number has already been submitted");
       return;
     }
 
     if (!imageFile) {
-      toast.error('Please upload a receipt image');
+      toast.error("Please upload a receipt image");
       return;
     }
 
     if (!formData.termsAccepted) {
-      toast.error('Please accept the Terms & Conditions');
+      toast.error("Please accept the Terms & Conditions");
       return;
     }
 
     const nricRegex = /^\d{12}$/;
     if (!nricRegex.test(formData.nric)) {
-      toast.error('NRIC must be 12 digits');
+      toast.error("NRIC must be 12 digits");
       return;
     }
 
     if (formData.mobileNumber.length > 12) {
-      toast.error('Mobile number cannot exceed 12 characters');
+      toast.error("Mobile number cannot exceed 12 characters");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      toast.error('Please enter a valid email address');
+      toast.error("Please enter a valid email address");
       return;
     }
 
     setLoading(true);
     try {
       const imageBase64 = await convertImageToBase64(imageFile);
+      // Combine address fields
+      const combinedAddress = [
+        formData.address1,
+        formData.address2,
+        formData.city,
+        formData.state,
+        formData.postalCode
+      ].filter(field => field.trim() !== "").join(", ");
+
       const submissionData = {
         segment: formData.segment,
         fullName: formData.fullName,
         nric: formData.nric,
         mobileNumber: formData.mobileNumber,
         email: formData.email,
-        address: formData.address,
+        address: combinedAddress,
         receiptNumber: formData.receiptNumber,
         receiptDate: formData.receiptDate,
         image: imageBase64,
         imageName: imageFile.name,
         qnaAnswer: formData.qnaAnswer,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submissionData)
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submissionData),
       });
 
-      toast.success('Form submitted successfully!');
+      toast.success("Form submitted successfully!");
       setFormData({
-        segment: '',
-        fullName: '',
-        nric: '',
-        mobileNumber: '',
-        email: '',
-        address: '',
-        receiptNumber: '',
-        receiptDate: '',
-        qnaAnswer: '',
+        segment: "",
+        fullName: "",
+        nric: "",
+        mobileNumber: "",
+        email: "",
+        address1: "",
+        address2: "",
+        city: "",
+        state: "",
+        postalCode: "",
+        receiptNumber: "",
+        receiptDate: "",
+        qnaAnswer: "",
         termsAccepted: false,
         ageConfirmed: false,
-        marketingConsent: false
+        marketingConsent: false,
       });
       setImageFile(null);
       setImagePreview(null);
       setReceiptExists(false);
-      document.getElementById('image-upload').value = '';
+      document.getElementById("image-upload").value = "";
     } catch (error) {
-      console.error('Error submitting form:', error);
-      toast.error('Error submitting form. Please try again.');
+      console.error("Error submitting form:", error);
+      toast.error("Error submitting form. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -178,40 +215,44 @@ const FormComponent = () => {
 
   const fetchSubmissionsByMobileNumber = async (mobileNumber) => {
     if (!mobileNumber || mobileNumber.length > 11) {
-      toast.error('Please enter a valid mobile number (max 11 digits)');
+      toast.error("Please enter a valid mobile number (max 11 digits)");
       return;
     }
     setLoadingSubmissions(true);
     try {
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getSubmissionsByMobileNumber&mobileNumber=${mobileNumber}`);
+      const response = await fetch(
+        `${GOOGLE_SCRIPT_URL}?action=getSubmissionsByMobileNumber&mobileNumber=${mobileNumber}`
+      );
       const data = await response.json();
-      if (data.result === 'success') {
+      if (data.result === "success") {
         setSubmissions(data.data);
         if (data.data.length === 0) {
-          toast.info('No submissions found for this mobile number');
+          toast.info("No submissions found for this mobile number");
         }
       } else {
-        toast.error('Failed to fetch submissions');
+        toast.error("Failed to fetch submissions");
       }
     } catch (error) {
-      console.error('Error fetching submissions:', error);
-      toast.error('Error fetching submissions');
+      console.error("Error fetching submissions:", error);
+      toast.error("Error fetching submissions");
     } finally {
       setLoadingSubmissions(false);
     }
   };
 
   return (
-    <div style={{
-      backgroundImage: 'url(/Background.png)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      backgroundColor: '#F5F0E8',
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <div
+      style={{
+        backgroundImage: "url(/Background.png)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundColor: "#F5F0E8",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -226,33 +267,41 @@ const FormComponent = () => {
       />
 
       {/* Sub Navigation */}
-      <div style={{ backgroundColor: '#F5F0E8', borderBottom: '2px solid #E5B746' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center space-x-8 h-16">
+      <div
+        style={{
+          backgroundColor: "#F5F0E8",
+          borderBottom: "2px solid #E5B746",
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex items-center justify-center space-x-2 sm:space-x-4 lg:space-x-8 h-12 sm:h-14 lg:h-16">
             <button
-              onClick={() => setActiveTab('submit')}
-              className={`px-6 py-2 font-bold text-lg transition ${
-                activeTab === 'submit' ? 'text-black' : 'text-gray-400'
-              }`}
-              style={{ fontStyle: activeTab === 'submit' ? 'italic' : 'normal' }}
+              onClick={() => setActiveTab("submit")}
+              className={`px-2 py-1 sm:px-4 sm:py-2 lg:px-6 font-bold text-[10px] sm:text-sm lg:text-lg transition whitespace-nowrap`}
+              style={{
+                fontStyle: activeTab === "submit" ? "italic" : "normal",
+                color: activeTab === "submit" ? "#000" : "#F68B1F",
+              }}
             >
               SUBMIT NOW
             </button>
             <button
-              onClick={() => setActiveTab('tracker')}
-              className={`px-6 py-2 font-bold text-lg transition ${
-                activeTab === 'tracker' ? 'text-black' : 'text-gray-400'
-              }`}
-              style={{ fontStyle: activeTab === 'tracker' ? 'italic' : 'normal' }}
+              onClick={() => setActiveTab("tracker")}
+              className={`px-2 py-1 sm:px-4 sm:py-2 lg:px-6 font-bold text-[10px] sm:text-sm lg:text-lg transition whitespace-nowrap`}
+              style={{
+                fontStyle: activeTab === "tracker" ? "italic" : "normal",
+                color: activeTab === "tracker" ? "#000" : "#F68B1F",
+              }}
             >
               ENTRY TRACKER
             </button>
             <button
-              onClick={() => setActiveTab('faq')}
-              className={`px-6 py-2 font-bold text-lg transition ${
-                activeTab === 'faq' ? 'text-black' : 'text-gray-400'
-              }`}
-              style={{ fontStyle: activeTab === 'faq' ? 'italic' : 'normal' }}
+              onClick={() => setActiveTab("faq")}
+              className={`px-2 py-1 sm:px-4 sm:py-2 lg:px-6 font-bold text-[10px] sm:text-sm lg:text-lg transition whitespace-nowrap`}
+              style={{
+                fontStyle: activeTab === "faq" ? "italic" : "normal",
+                color: activeTab === "faq" ? "#000" : "#F68B1F",
+              }}
             >
               FAQ
             </button>
@@ -260,21 +309,30 @@ const FormComponent = () => {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-12" style={{ flex: '1 0 auto' }}>
+      <div
+        className="max-w-4xl mx-auto px-4 py-12"
+        style={{ flex: "1 0 auto" }}
+      >
         {/* SUBMIT NOW TAB */}
-        {activeTab === 'submit' && (
+        {activeTab === "submit" && (
           <div>
-            <h1 className="text-5xl font-bold text-center mb-12" style={{
-              fontFamily: 'BebasNeue, Arial, sans-serif',
-              color: '#E5B746'
-            }}>
+            <h1
+              className="text-5xl font-bold text-center mb-12"
+              style={{
+                fontFamily: "BebasNeue, Arial, sans-serif",
+                color: "#F68B1F",
+              }}
+            >
               SUBMIT RECEIPT
             </h1>
 
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Segment */}
               <div>
-                <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                <label
+                  className="block text-base font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
                   SEGMENT<span className="text-red-600">*</span>
                 </label>
                 <select
@@ -283,19 +341,24 @@ const FormComponent = () => {
                   onChange={handleInputChange}
                   required
                   className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                  style={{ fontStyle: 'italic' }}
+                  style={{ fontStyle: "italic" }}
                 >
                   <option value="">Choose your segment</option>
                   <option value="Supermarket">Supermarket</option>
                   <option value="Convenience Store">Convenience Store</option>
-                  <option value="Ecomm(Shopee/Lazada)">Ecomm(Shopee/Lazada)</option>
+                  <option value="Ecomm(Shopee/Lazada)">
+                    Ecomm(Shopee/Lazada)
+                  </option>
                 </select>
               </div>
 
               {/* Full Name and NRIC */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                  <label
+                    className="block text-base font-bold mb-2"
+                    style={{ color: "#000" }}
+                  >
                     FULL NAME (AS PER IC)<span className="text-red-600">*</span>
                   </label>
                   <input
@@ -306,11 +369,14 @@ const FormComponent = () => {
                     required
                     placeholder="Enter your Name"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: 'italic' }}
+                    style={{ fontStyle: "italic" }}
                   />
                 </div>
                 <div>
-                  <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                  <label
+                    className="block text-base font-bold mb-2"
+                    style={{ color: "#000" }}
+                  >
                     NRIC<span className="text-red-600">*</span>
                   </label>
                   <input
@@ -322,7 +388,7 @@ const FormComponent = () => {
                     maxLength="12"
                     placeholder="Eg.970909145222"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: 'italic' }}
+                    style={{ fontStyle: "italic" }}
                   />
                 </div>
               </div>
@@ -330,7 +396,10 @@ const FormComponent = () => {
               {/* Phone and Email */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                  <label
+                    className="block text-base font-bold mb-2"
+                    style={{ color: "#000" }}
+                  >
                     PHONE NUMBER<span className="text-red-600">*</span>
                   </label>
                   <input
@@ -342,11 +411,14 @@ const FormComponent = () => {
                     maxLength="12"
                     placeholder="Eg. +60 123 456 7890"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: 'italic' }}
+                    style={{ fontStyle: "italic" }}
                   />
                 </div>
                 <div>
-                  <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                  <label
+                    className="block text-base font-bold mb-2"
+                    style={{ color: "#000" }}
+                  >
                     EMAIL ADDRESS<span className="text-red-600">*</span>
                   </label>
                   <input
@@ -357,32 +429,120 @@ const FormComponent = () => {
                     required
                     placeholder="Enter your email address"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: 'italic' }}
+                    style={{ fontStyle: "italic" }}
                   />
                 </div>
               </div>
 
-              {/* Address */}
-              <div>
-                <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
-                  ADDRESS<span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Enter your address"
-                  className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                  style={{ fontStyle: 'italic' }}
-                />
+              {/* Address Fields */}
+              <div className="space-y-8">
+                {/* Address Line 1 */}
+                <div>
+                  <label
+                    className="block text-base font-bold mb-2"
+                    style={{ color: "#000" }}
+                  >
+                    ADDRESS<span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="address1"
+                    value={formData.address1}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter your address"
+                    className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                    style={{ fontStyle: "italic" }}
+                  />
+                </div>
+
+                {/* Address Line 2 */}
+                <div>
+                  <label
+                    className="block text-base font-bold mb-2"
+                    style={{ color: "#000" }}
+                  >
+                    ADDRESS 2
+                  </label>
+                  <input
+                    type="text"
+                    name="address2"
+                    value={formData.address2}
+                    onChange={handleInputChange}
+                    placeholder="Apartment, suite, etc. (optional)"
+                    className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                    style={{ fontStyle: "italic" }}
+                  />
+                </div>
+
+                {/* City and State */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
+                    <label
+                      className="block text-base font-bold mb-2"
+                      style={{ color: "#000" }}
+                    >
+                      CITY<span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="Enter your city"
+                      className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                      style={{ fontStyle: "italic" }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className="block text-base font-bold mb-2"
+                      style={{ color: "#000" }}
+                    >
+                      STATE/PROVINCE<span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="Enter your state/province"
+                      className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                      style={{ fontStyle: "italic" }}
+                    />
+                  </div>
+                </div>
+
+                {/* Postal Code */}
+                <div>
+                  <label
+                    className="block text-base font-bold mb-2"
+                    style={{ color: "#000" }}
+                  >
+                    POSTAL/ZIP CODE<span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="postalCode"
+                    value={formData.postalCode}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter your postal/zip code"
+                    className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                    style={{ fontStyle: "italic" }}
+                  />
+                </div>
               </div>
 
               {/* Receipt Number and Date */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                  <label
+                    className="block text-base font-bold mb-2"
+                    style={{ color: "#000" }}
+                  >
                     RECEIPT NUMBER<span className="text-red-600">*</span>
                   </label>
                   <input
@@ -393,14 +553,19 @@ const FormComponent = () => {
                     required
                     placeholder="Enter your receipt number"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: 'italic' }}
+                    style={{ fontStyle: "italic" }}
                   />
                   {receiptExists && (
-                    <p className="mt-2 text-sm text-red-600">This receipt has been submitted</p>
+                    <p className="mt-2 text-sm text-red-600">
+                      This receipt has been submitted
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-base font-bold mb-2" style={{ color: '#000' }}>
+                  <label
+                    className="block text-base font-bold mb-2"
+                    style={{ color: "#000" }}
+                  >
                     RECEIPT DATE<span className="text-red-600">*</span>
                   </label>
                   <input
@@ -411,26 +576,40 @@ const FormComponent = () => {
                     required
                     placeholder="dd/mm/yyy"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: 'italic' }}
+                    style={{ fontStyle: "italic" }}
                   />
                 </div>
               </div>
 
               {/* Upload Image */}
               <div>
-                <label className="block text-base font-bold mb-4" style={{ color: '#000' }}>
+                <label
+                  className="block text-base font-bold mb-4"
+                  style={{ color: "#000" }}
+                >
                   PROOF OF PURCHASE<span className="text-red-600">*</span>
                 </label>
                 <label
                   htmlFor="image-upload"
                   className="w-full py-6 flex items-center justify-center font-bold text-2xl text-white cursor-pointer rounded-lg shadow-lg transition"
                   style={{
-                    background: 'linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)'
+                    background:
+                      "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
                   }}
                 >
                   UPLOAD IMAGE
-                  <svg className="w-8 h-8 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  <svg
+                    className="w-8 h-8 ml-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
                   </svg>
                 </label>
                 <input
@@ -443,36 +622,88 @@ const FormComponent = () => {
                 />
                 {imagePreview && (
                   <div className="mt-4">
-                    <img src={imagePreview} alt="Preview" className="max-w-full h-auto max-h-64 rounded-md" />
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="max-w-full h-auto max-h-64 rounded-md"
+                    />
                   </div>
                 )}
               </div>
 
+               <div>
+                <h3
+                  className="text-xl font-bold mb-4"
+                  style={{ color: "#000" }}
+                >
+                  Where does Kirin
+                  Ichiban originally come from?
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {["CHINA", "SOUTH KOREA", "JAPAN", "SINGAPORE"].map(
+                    (country) => (
+                      <label
+                        key={country}
+                        className="flex items-center cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          name="qnaAnswer"
+                          value={country}
+                          checked={formData.qnaAnswer === country}
+                          onChange={handleInputChange}
+                          className="h-5 w-5"
+                          style={{ accentColor: "#E5B746" }}
+                        />
+                        <span className="ml-2 font-semibold">{country}</span>
+                      </label>
+                    )
+                  )}
+                </div>
+              </div>
+
+
               {/* Terms */}
               <div>
-                <h3 className="text-xl font-bold mb-4" style={{ color: '#000' }}>TERMS AND CONDITIONS</h3>
+                <h3
+                  className="text-xl font-bold mb-4"
+                  style={{ color: "#000" }}
+                >
+                  TERMS AND CONDITIONS
+                </h3>
                 <div className="space-y-3">
                   <label className="flex items-start cursor-pointer">
                     <input
                       type="checkbox"
                       checked={formData.ageConfirmed}
-                      onChange={(e) => setFormData(prev => ({ ...prev, ageConfirmed: e.target.checked }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          ageConfirmed: e.target.checked,
+                        }))
+                      }
                       className="mt-1 h-5 w-5 rounded"
-                      style={{ accentColor: '#E5B746' }}
+                      style={{ accentColor: "#E5B746" }}
                     />
                     <span className="ml-3 text-sm">
-                      <span className="text-red-600">*</span> I acknowledge that I'm a non-Muslim, aged 21 and above.
+                      <span className="text-red-600">*</span> I acknowledge that
+                      I'm a non-Muslim, aged 21 and above.
                     </span>
                   </label>
                   <label className="flex items-start cursor-pointer">
                     <input
                       type="checkbox"
                       checked={formData.termsAccepted}
-                      onChange={(e) => setFormData(prev => ({ ...prev, termsAccepted: e.target.checked }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          termsAccepted: e.target.checked,
+                        }))
+                      }
                       className="mt-1 h-5 w-5 rounded"
                     />
                     <span className="ml-3 text-sm">
-                      <span className="text-red-600">*</span> I agree to the{' '}
+                      <span className="text-red-600">*</span> I agree to the{" "}
                       <a
                         href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
                         target="_blank"
@@ -481,8 +712,8 @@ const FormComponent = () => {
                         onClick={(e) => e.stopPropagation()}
                       >
                         Terms & Conditions
-                      </a>
-                      {' '}and{' '}
+                      </a>{" "}
+                      and{" "}
                       <a
                         href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
                         target="_blank"
@@ -491,47 +722,33 @@ const FormComponent = () => {
                         onClick={(e) => e.stopPropagation()}
                       >
                         Privacy Policy
-                      </a>.
+                      </a>
+                      .
                     </span>
                   </label>
                   <label className="flex items-start cursor-pointer">
                     <input
                       type="checkbox"
                       checked={formData.marketingConsent}
-                      onChange={(e) => setFormData(prev => ({ ...prev, marketingConsent: e.target.checked }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          marketingConsent: e.target.checked,
+                        }))
+                      }
                       className="mt-1 h-5 w-5 rounded"
                     />
                     <span className="ml-3 text-sm">
-                      <span className="text-red-600">*</span> I consent to receiving Kirin Ichiban marketing and promotional message /email.
+                      <span className="text-red-600">*</span> I consent to
+                      receiving Kirin Ichiban marketing and promotional message
+                      /email.
                     </span>
                   </label>
                 </div>
               </div>
 
               {/* Question */}
-              <div>
-                <h3 className="text-xl font-bold mb-4" style={{ color: '#000' }}>QUESTION ABOUT KIRIN ICHIBAN</h3>
-                <p className="mb-4 font-semibold" style={{ fontStyle: 'italic' }}>
-                  <span className="text-red-600">*</span>Where does Kirin Ichiban originally come from?
-                </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {['CHINA', 'SOUTH KOREA', 'JAPAN', 'SINGAPORE'].map((country) => (
-                    <label key={country} className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="qnaAnswer"
-                        value={country}
-                        checked={formData.qnaAnswer === country}
-                        onChange={handleInputChange}
-                        className="h-5 w-5"
-                        style={{ accentColor: '#E5B746' }}
-                      />
-                      <span className="ml-2 font-semibold">{country}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
+        
               {/* Submit Button */}
               <div className="flex justify-center pt-8">
                 <button
@@ -539,10 +756,11 @@ const FormComponent = () => {
                   disabled={loading || receiptExists}
                   className="px-12 py-4 font-bold text-2xl text-white rounded-full shadow-lg transition disabled:opacity-50"
                   style={{
-                    background: 'linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)'
+                    background:
+                      "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
                   }}
                 >
-                  {loading ? 'SUBMITTING...' : 'SUBMIT RECEIPT'}
+                  {loading ? "SUBMITTING..." : "SUBMIT RECEIPT"}
                 </button>
               </div>
             </form>
@@ -550,13 +768,19 @@ const FormComponent = () => {
         )}
 
         {/* ENTRY TRACKER TAB */}
-        {activeTab === 'tracker' && (
+        {activeTab === "tracker" && (
           <div>
-            <h1 className="text-3xl font-bold text-center mb-8" style={{ color: '#000' }}>
+            <h1
+              className="text-3xl font-bold text-center mb-8"
+              style={{ color: "#F68B1F" }}
+            >
               ENTER YOUR MOBILE NUMBER AND TRACK YOUR ENTRY STATUS
             </h1>
             <div className="max-w-2xl mx-auto">
-              <label className="block text-base font-bold mb-4" style={{ color: '#000' }}>
+              <label
+                className="block text-base font-bold mb-4"
+                style={{ color: "#000" }}
+              >
                 MOBILE NUMBER<span className="text-red-600">*</span>
               </label>
               <input
@@ -566,39 +790,67 @@ const FormComponent = () => {
                 maxLength="11"
                 placeholder="Enter mobile number (max 11 digits)"
                 className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none text-gray-400"
-                style={{ fontStyle: 'italic' }}
+                style={{ fontStyle: "italic" }}
               />
               <div className="flex justify-center mt-8">
                 <button
-                  onClick={() => fetchSubmissionsByMobileNumber(trackingMobileNumber)}
+                  onClick={() =>
+                    fetchSubmissionsByMobileNumber(trackingMobileNumber)
+                  }
                   disabled={loadingSubmissions}
                   className="px-12 py-4 font-bold text-2xl text-white rounded-full shadow-lg"
-                  style={{ background: 'linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)' }}
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
+                  }}
                 >
-                  {loadingSubmissions ? 'LOADING...' : 'TRACK MY ENTRY'}
+                  {loadingSubmissions ? "LOADING..." : "TRACK MY ENTRY"}
                 </button>
               </div>
 
               {submissions.length > 0 && (
                 <div className="mt-12 overflow-x-auto">
-                  <table className="min-w-full" style={{ backgroundColor: '#E5B746' }}>
+                  <table
+                    className="min-w-full"
+                    style={{ backgroundColor: "#E5B746" }}
+                  >
                     <thead>
                       <tr>
-                        <th className="px-6 py-3 text-left text-sm font-bold">MOBILE NUMBER</th>
-                        <th className="px-6 py-3 text-left text-sm font-bold">Name</th>
-                        <th className="px-6 py-3 text-left text-sm font-bold">Date of Submission</th>
-                        <th className="px-6 py-3 text-left text-sm font-bold">Receipt Number</th>
-                        <th className="px-6 py-3 text-left text-sm font-bold">Submission Status</th>
+                        <th className="px-6 py-3 text-left text-sm font-bold">
+                          MOBILE NUMBER
+                        </th>
+                        <th className="px-6 py-3 text-left text-sm font-bold">
+                          Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-sm font-bold">
+                          Date of Submission
+                        </th>
+                        <th className="px-6 py-3 text-left text-sm font-bold">
+                          Receipt Number
+                        </th>
+                        <th className="px-6 py-3 text-left text-sm font-bold">
+                          Submission Status
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white">
                       {submissions.map((sub, idx) => (
                         <tr key={idx}>
-                          <td className="px-6 py-4 text-sm">{sub.mobileNumber}</td>
+                          <td className="px-6 py-4 text-sm">
+                            {sub.mobileNumber}
+                          </td>
                           <td className="px-6 py-4 text-sm">{sub.name}</td>
-                          <td className="px-6 py-4 text-sm">{new Date(sub.dateOfSubmission).toLocaleDateString()}</td>
-                          <td className="px-6 py-4 text-sm">{sub.receiptNumber}</td>
-                          <td className="px-6 py-4 text-sm">{sub.submissionStatus}</td>
+                          <td className="px-6 py-4 text-sm">
+                            {new Date(
+                              sub.dateOfSubmission
+                            ).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            {sub.receiptNumber}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            {sub.submissionStatus}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -610,42 +862,199 @@ const FormComponent = () => {
         )}
 
         {/* FAQ TAB */}
-        {activeTab === 'faq' && (
+        {activeTab === "faq" && (
           <div>
-            <h1 className="text-4xl font-bold text-center mb-12" style={{ color: '#000' }}>
+            <h1
+              className="text-4xl font-bold text-center mb-12"
+              style={{ color: "#F68B1F" }}
+            >
               FREQUENTLY ASKED QUESTIONS
             </h1>
             <div className="max-w-3xl mx-auto space-y-8">
               <div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: '#000' }}>
-                  Who can participate in the Kirin Spend to Win Campaign?
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  Who can participate in this Kirin Ichiban 2026 Chinese New
+                  Year promotion?{" "}
                 </h3>
                 <p className="text-gray-700 italic">
-                  The promotions are open to all non-Muslim residents in Malaysia aged 21 years and above. All entries are subject to terms and conditions. Please refer to T&Cs for more information.
+                  This promotion is open to all non-Muslim residents of West
+                  Malaysia aged 21 years and above. All entries must comply with
+                  the official Terms & Conditions.{" "}
                 </p>
               </div>
               <div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: '#000' }}>
-                  Can I participate if I live in East Malaysia?
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  When is the contest period?{" "}
                 </h3>
                 <p className="text-gray-700 italic">
-                  No, the campaign only available for West Malaysia.
+                  The Kirin Ichiban 2026 Chinese New Year promotion runs from
+                  26th December 2025 – 1 st February 2026.{" "}
                 </p>
               </div>
               <div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: '#000' }}>
-                  Lorem Ipsum
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  How can I participate in this promotion?{" "}
+                </h3>
+                <div className="text-gray-700 italic space-y-3">
+                  <div>
+                    <p className="font-semibold mb-2">Mechanics / Minimum Spend:</p>
+                    <ul className="list-none space-y-1 ml-4">
+                      <li>i. Purchase a total minimum of RM88 of any Kirin Ichiban products in a single receipt.</li>
+                      <li>ii. Scan QR code to submit the receipt via Contest Website.</li>
+                      <li>iii. Stand to win Kirin Ichiban Limited-Edition Mah Jong Set worth RM388 (100 winners).</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-semibold mb-2">Eligible Channels:</p>
+                    <ul className="list-none space-y-1 ml-4">
+                      <li>i. Hypermarket / Supermarkets / MOFT</li>
+                      <li>ii. Convenience Stores (CVS)</li>
+                      <li>iii. E-commerce platforms (Shopee/ Lazada)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  How do I submit my receipt?{" "}
+                </h3>
+                <div className="text-gray-700 italic">
+                  <ol className="list-none space-y-2">
+                    <li>1) Scan the QR code found on the in-store point-of-sale materials or visit https://kirin-promotion.tongwohgroup.com/.</li>
+                    <li>2) Fill in the form and ensure all details are accurate.</li>
+                    <li>3) Upload your original receipt. Please make sure the proof of purchase is clear and legible for verification.</li>
+                  </ol>
+                </div>
+              </div>
+              <div>
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  Can I combine multiple receipts to participate in the
+                  promotion?
                 </h3>
                 <p className="text-gray-700 italic">
-                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet.
+                  No. Each entry must be submitted using one single receipt
+                  only.{" "}
                 </p>
               </div>
               <div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: '#000' }}>
-                  Lorem Ipsum
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  What receipts are considered valid?
                 </h3>
                 <p className="text-gray-700 italic">
-                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet.
+                  Receipts must clearly show the store name, date, purchased
+                  Kirin Ichiban products, price, and total amount. Handwritten
+                  receipts, altered receipts, or unclear images will not be
+                  accepted.{" "}
+                </p>
+              </div>
+              <div>
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  Is there a limit to how many entries I can submit throughout
+                  the campaign period?
+                </h3>
+                <p className="text-gray-700 italic">
+                  There is no limit to the number of entries. Participants may
+                  submit as many valid entries as they wish, as long as each
+                  entry uses a different receipt and meets all Terms &
+                  Conditions.
+                </p>
+              </div>
+              <div>
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  How do I check my entry status?
+                </h3>
+                <p className="text-gray-700 italic">
+                  Participants may check their entry status via the mobile
+                  number submitted at https://kirin-promotion.tongwohgroup.com/.
+                </p>
+              </div>
+              <div>
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  How will I know if I am selected as a winner?
+                </h3>
+                <p className="text-gray-700 italic">
+                  Winners will be announced on our official social media
+                  channels: Instagram @kirinichibanmy and Facebook Kirin Ichiban
+                  Malaysia. Participants may also check the winners list at
+                  https://kirin-promotion.tongwohgroup.com/.{" "}
+                </p>
+              </div>
+              <div>
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  How will the prizes be delivered?
+                </h3>
+                <p className="text-gray-700 italic">
+                  Winners will be contacted for delivery arrangements. Prizes
+                  will be delivered only to addresses within West Malaysia.{" "}
+                </p>
+              </div>
+              <div>
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  Can I transfer my prize to someone else?
+                </h3>
+                <p className="text-gray-700 italic">
+                  No. All prizes are non-transferable, non-exchangeable, and
+                  cannot be redeemed for cash or other alternatives.
+                </p>
+              </div>
+              <div>
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  Are there any taxes or additional fees associated with the
+                  prize?
+                </h3>
+                <p className="text-gray-700 italic">
+                  No. The prize is not subject to additional taxes or fees.
+                  Winners will receive the prize exactly as described in the
+                  Terms & Conditions.
+                </p>
+              </div>
+              <div>
+                <h3
+                  className="text-xl font-bold mb-2"
+                  style={{ color: "#000" }}
+                >
+                  Who can I contact if I have more questions?{" "}
+                </h3>
+                <p className="text-gray-700 italic">
+                  For further assistance, please email us at: enquiry@twe.my
+                  Please do not forward this promotion to individuals below the
+                  legal drinking age
                 </p>
               </div>
             </div>
@@ -654,7 +1063,10 @@ const FormComponent = () => {
       </div>
 
       {/* Footer */}
-      <div className="py-6 text-center" style={{ backgroundColor: '#E5B746', flexShrink: 0, marginTop: 'auto' }}>
+      <div
+        className="py-6 text-center"
+        style={{ backgroundColor: "#E5B746", flexShrink: 0, marginTop: "auto" }}
+      >
         <p className="text-black font-bold text-[10px] sm:text-sm lg:text-base">
           <a
             href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
@@ -663,8 +1075,8 @@ const FormComponent = () => {
             className="hover:underline"
           >
             TERMS & CONDITION APPLIES
-          </a>
-          {' '} • {' '}
+          </a>{" "}
+          •{" "}
           <a
             href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
             target="_blank"

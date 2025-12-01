@@ -67,15 +67,19 @@ const Home = ({ onNavigateToForm }) => {
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
         <h2 className="text-5xl font-bold mb-6" style={{
           fontFamily: 'BebasNeue, Arial, sans-serif',
-          color: '#000'
+          color: '#F68B1F'
         }}>
-          LOREM IPSUM
+          PROSPERITY BEGINS WITH KIRIN ICHIBAN
         </h2>
         <p className="text-lg mb-4" style={{ color: '#E5B746' }}>
-          LOREM IPSUM
+          Celebrate meaningful moments with a chance to win our Limited-Edition Kirin Ichiban
+Mah Jong Set.
         </p>
         <p className="text-base leading-relaxed" style={{ color: '#000' }}>
-          Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip
+          Step into the festive season with a celebration made for togetherness. This Chinese
+New Year, let Kirin Ichiban be the taste that completes your reunions, your celebrations,
+and the moments that matter most. Stand to win our Limited-Edition Kirin Ichiban Mah
+Jong Sets — a festive symbol of tradition and togetherness.orem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip
         </p>
       </div>
 
@@ -102,6 +106,13 @@ const Home = ({ onNavigateToForm }) => {
 
       {/* Winner List Section */}
       <div className="max-w-6xl mx-auto px-4 py-16">
+        <h2 className="text-5xl font-bold text-center mb-12" style={{
+          fontFamily: 'BebasNeue, Arial, sans-serif',
+          color: '#F68B1F'
+        }}>
+          CONGRATULATIONS TO OUR WINNERS!
+        </h2>
+
         {loading ? (
           <div className="flex justify-center items-center py-12">
             <svg
@@ -148,7 +159,7 @@ const Home = ({ onNavigateToForm }) => {
               textAlign: 'center'
             }}>
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">WINNER LIST</h2>
-            </div>
+                </div>
 
             {/* Content */}
             <div style={{
@@ -162,7 +173,7 @@ const Home = ({ onNavigateToForm }) => {
                     color: '#000'
                   }}>
                     {winner.name}
-                  </div>
+                </div>
                 ))}
               </div>
             </div>

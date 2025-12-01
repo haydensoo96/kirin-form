@@ -18,7 +18,7 @@ const AgeVerification = ({ onVerify }) => {
         {/* Row 2: Age Verification Message */}
         <div className="text-center mb-6">
           <h2 className="text-2xl md:text-3xl font-bold" style={{ color: '#000' }}>
-            TELL US US YOUR AGE TO CONTINUE
+            TELL US YOUR AGE TO CONTINUE
           </h2>
         </div>
 

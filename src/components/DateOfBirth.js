@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 const DateOfBirth = ({ onContinue }) => {
   const [day, setDay] = useState('');
@@ -6,11 +6,19 @@ const DateOfBirth = ({ onContinue }) => {
   const [year, setYear] = useState('');
   const [error, setError] = useState('');
 
+  const dayRef = useRef(null);
+  const monthRef = useRef(null);
+  const yearRef = useRef(null);
+
   const handleDayChange = (e) => {
     const value = e.target.value.replace(/\D/g, '');
     if (value.length <= 2) {
       setDay(value);
       setError('');
+      // Auto-advance to month when 2 digits entered
+      if (value.length === 2) {
+        monthRef.current?.focus();
+      }
     }
   };
 
@@ -19,12 +27,16 @@ const DateOfBirth = ({ onContinue }) => {
     if (value.length <= 2) {
       setMonth(value);
       setError('');
+      // Auto-advance to year when 2 digits entered
+      if (value.length === 2) {
+        yearRef.current?.focus();
+      }
     }
   };
 
   const handleYearChange = (e) => {
     const value = e.target.value.replace(/\D/g, '');
-    if (value.length <= 2) {
+    if (value.length <= 4) {
       setYear(value);
       setError('');
     }
@@ -39,20 +51,7 @@ const DateOfBirth = ({ onContinue }) => {
 
     const dayNum = parseInt(day);
     const monthNum = parseInt(month);
-
-    // Smart YY to YYYY conversion
-    const currentYear = new Date().getFullYear();
-    const currentCentury = Math.floor(currentYear / 100) * 100;
-    const currentYearShort = currentYear % 100;
-
-    let yearNum;
-    if (parseInt(year) <= currentYearShort) {
-      // 0-25 = 2000-2025
-      yearNum = currentCentury + parseInt(year);
-    } else {
-      // 26-99 = 1926-1999
-      yearNum = currentCentury - 100 + parseInt(year);
-    }
+    const yearNum = parseInt(year);
 
     // Basic validation
     if (dayNum < 1 || dayNum > 31) {
@@ -62,6 +61,11 @@ const DateOfBirth = ({ onContinue }) => {
 
     if (monthNum < 1 || monthNum > 12) {
       setError('Please enter a valid month (1-12)');
+      return;
+    }
+
+    if (yearNum < 1900 || yearNum > new Date().getFullYear()) {
+      setError('Please enter a valid year');
       return;
     }
 
@@ -100,7 +104,7 @@ const DateOfBirth = ({ onContinue }) => {
         {/* Row 2: Age Verification Message */}
         <div className="text-center mb-6">
           <h2 className="text-2xl md:text-3xl font-bold" style={{ color: '#000' }}>
-            TELL US US YOUR AGE TO CONTINUE
+            TELL US YOUR AGE TO CONTINUE
           </h2>
         </div>
 
@@ -130,6 +134,7 @@ const DateOfBirth = ({ onContinue }) => {
         <div className="flex justify-center items-center gap-4 mb-6 px-4">
           <div className="w-24">
             <input
+              ref={dayRef}
               type="text"
               inputMode="numeric"
               placeholder="DD"
@@ -146,6 +151,7 @@ const DateOfBirth = ({ onContinue }) => {
           </div>
           <div className="w-24">
             <input
+              ref={monthRef}
               type="text"
               inputMode="numeric"
               placeholder="MM"
@@ -160,14 +166,15 @@ const DateOfBirth = ({ onContinue }) => {
               }}
             />
           </div>
-          <div className="w-24">
+          <div className="w-32">
             <input
+              ref={yearRef}
               type="text"
               inputMode="numeric"
-              placeholder="YY"
+              placeholder="YYYY"
               value={year}
               onChange={handleYearChange}
-              maxLength="2"
+              maxLength="4"
               className="w-full h-24 text-center text-3xl font-bold rounded-lg focus:outline-none focus:border-black transition"
               style={{
                 backgroundColor: '#FFF',
