@@ -27,7 +27,7 @@ const FormComponent = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [submissions, setSubmissions] = useState([]);
-  const [trackingMobileNumber, setTrackingMobileNumber] = useState("");
+  const [trackingMobileNumber, setTrackingMobileNumber] = useState("+60");
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [receiptExists, setReceiptExists] = useState(false);
 
@@ -53,6 +53,23 @@ const FormComponent = () => {
     // Limit to 10 digits after +60 (total 12 digits)
     if (digits.length <= 10) {
       setFormData((prev) => ({ ...prev, mobileNumber: '+60' + digits }));
+    }
+  };
+
+  const handleTrackingPhoneChange = (e) => {
+    let input = e.target.value;
+
+    // Remove all non-digits
+    let digits = input.replace(/\D/g, '');
+
+    // If digits start with 60, keep them; otherwise prepend 60
+    if (digits.startsWith('60')) {
+      digits = digits.slice(2); // Remove the 60 prefix to get user's number
+    }
+
+    // Limit to 10 digits after +60 (total 12 digits)
+    if (digits.length <= 10) {
+      setTrackingMobileNumber('+60' + digits);
     }
   };
 
@@ -322,8 +339,14 @@ const FormComponent = () => {
   };
 
   const fetchSubmissionsByMobileNumber = async (mobileNumber) => {
-    if (!mobileNumber || mobileNumber.length > 11) {
-      toast.error("Please enter a valid mobile number (max 11 digits)");
+    if (!mobileNumber || mobileNumber === "+60") {
+      toast.error("Please enter a valid mobile number");
+      return;
+    }
+    // Validate phone number format +60XXXXXXXXX (9-10 digits after +60)
+    const phoneRegex = /^\+60\d{9,10}$/;
+    if (!phoneRegex.test(mobileNumber)) {
+      toast.error("Phone number must be +60 followed by 9-10 digits");
       return;
     }
     setLoadingSubmissions(true);
@@ -902,9 +925,8 @@ const FormComponent = () => {
               <input
                 type="text"
                 value={trackingMobileNumber}
-                onChange={(e) => setTrackingMobileNumber(e.target.value)}
-                maxLength="11"
-                placeholder="Enter mobile number (max 11 digits)"
+                onChange={handleTrackingPhoneChange}
+                placeholder="Eg. +60123456789"
                 className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none text-gray-400"
                 style={{ fontStyle: "italic" }}
               />
