@@ -8,7 +8,7 @@ const FormComponent = () => {
     segment: "",
     fullName: "",
     nric: "",
-    mobileNumber: "",
+    mobileNumber: "+60",
     email: "",
     address1: "",
     address2: "",
@@ -36,6 +36,47 @@ const FormComponent = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePhoneChange = (e) => {
+    let input = e.target.value;
+
+    // Remove all non-digits
+    let digits = input.replace(/\D/g, '');
+
+    // If digits start with 60, keep them; otherwise prepend 60
+    if (digits.startsWith('60')) {
+      digits = digits.slice(2); // Remove the 60 prefix to get user's number
+    }
+
+    // Limit to 10 digits after +60 (total 12 digits)
+    if (digits.length <= 10) {
+      setFormData((prev) => ({ ...prev, mobileNumber: '+60' + digits }));
+    }
+  };
+
+  const handleReceiptDateChange = (e) => {
+    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+
+    if (value.length <= 8) {
+      // Auto-format as dd/mm/yyyy
+      if (value.length >= 2) {
+        value = value.slice(0, 2) + '/' + value.slice(2);
+      }
+      if (value.length >= 5) {
+        value = value.slice(0, 5) + '/' + value.slice(5);
+      }
+      setFormData((prev) => ({ ...prev, receiptDate: value }));
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    const fileInput = document.getElementById("image-upload");
+    if (fileInput) {
+      fileInput.value = "";
+    }
   };
 
   const handleImageChange = (e) => {
@@ -102,7 +143,7 @@ const FormComponent = () => {
       !formData.segment ||
       !formData.fullName ||
       !formData.nric ||
-      !formData.mobileNumber ||
+      formData.mobileNumber === "+60" ||
       !formData.email ||
       !formData.address1 ||
       !formData.city ||
@@ -137,14 +178,35 @@ const FormComponent = () => {
       return;
     }
 
-    if (formData.mobileNumber.length > 12) {
-      toast.error("Mobile number cannot exceed 12 characters");
-      return;
-    }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast.error("Please enter a valid email address");
+      return;
+    }
+
+    // Validate phone number format +60XXXXXXXXX (9-10 digits after +60)
+    const phoneRegex = /^\+60\d{9,10}$/;
+    if (!phoneRegex.test(formData.mobileNumber)) {
+      toast.error("Phone number must be +60 followed by 9-10 digits");
+      return;
+    }
+
+    // Validate receipt date format dd/mm/yyyy
+    const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    if (!dateRegex.test(formData.receiptDate)) {
+      toast.error("Receipt date must be in dd/mm/yyyy format");
+      return;
+    }
+
+    // Validate receipt date is a valid date
+    const dateParts = formData.receiptDate.split('/');
+    const day = parseInt(dateParts[0], 10);
+    const month = parseInt(dateParts[1], 10);
+    const year = parseInt(dateParts[2], 10);
+    const dateObj = new Date(year, month - 1, day);
+
+    if (dateObj.getDate() !== day || dateObj.getMonth() !== month - 1 || dateObj.getFullYear() !== year) {
+      toast.error("Please enter a valid receipt date");
       return;
     }
 
@@ -157,8 +219,10 @@ const FormComponent = () => {
         formData.address2,
         formData.city,
         formData.state,
-        formData.postalCode
-      ].filter(field => field.trim() !== "").join(", ");
+        formData.postalCode,
+      ]
+        .filter((field) => field.trim() !== "")
+        .join(", ");
 
       const submissionData = {
         segment: formData.segment,
@@ -187,7 +251,7 @@ const FormComponent = () => {
         segment: "",
         fullName: "",
         nric: "",
-        mobileNumber: "",
+        mobileNumber: "+60",
         email: "",
         address1: "",
         address2: "",
@@ -323,7 +387,7 @@ const FormComponent = () => {
                 color: "#F68B1F",
               }}
             >
-              SUBMIT RECEIPT
+              SUBMIT
             </h1>
 
             <form onSubmit={handleSubmit} className="space-y-8">
@@ -341,10 +405,9 @@ const FormComponent = () => {
                   onChange={handleInputChange}
                   required
                   className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                  style={{ fontStyle: "italic" }}
                 >
                   <option value="">Choose your segment</option>
-                  <option value="Supermarket">Supermarket</option>
+                  <option value="Supermarket">Supermarket/Hypermarket</option>
                   <option value="Convenience Store">Convenience Store</option>
                   <option value="Ecomm(Shopee/Lazada)">
                     Ecomm(Shopee/Lazada)
@@ -369,7 +432,6 @@ const FormComponent = () => {
                     required
                     placeholder="Enter your Name"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: "italic" }}
                   />
                 </div>
                 <div>
@@ -388,7 +450,6 @@ const FormComponent = () => {
                     maxLength="12"
                     placeholder="Eg.970909145222"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: "italic" }}
                   />
                 </div>
               </div>
@@ -406,12 +467,10 @@ const FormComponent = () => {
                     type="text"
                     name="mobileNumber"
                     value={formData.mobileNumber}
-                    onChange={handleInputChange}
+                    onChange={handlePhoneChange}
                     required
-                    maxLength="12"
-                    placeholder="Eg. +60 123 456 7890"
+                    placeholder="Eg. +60123456789"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: "italic" }}
                   />
                 </div>
                 <div>
@@ -429,7 +488,6 @@ const FormComponent = () => {
                     required
                     placeholder="Enter your email address"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: "italic" }}
                   />
                 </div>
               </div>
@@ -452,7 +510,6 @@ const FormComponent = () => {
                     required
                     placeholder="Enter your address"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: "italic" }}
                   />
                 </div>
 
@@ -471,7 +528,6 @@ const FormComponent = () => {
                     onChange={handleInputChange}
                     placeholder="Apartment, suite, etc. (optional)"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: "italic" }}
                   />
                 </div>
 
@@ -492,7 +548,6 @@ const FormComponent = () => {
                       required
                       placeholder="Enter your city"
                       className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                      style={{ fontStyle: "italic" }}
                     />
                   </div>
                   <div>
@@ -510,7 +565,6 @@ const FormComponent = () => {
                       required
                       placeholder="Enter your state/province"
                       className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                      style={{ fontStyle: "italic" }}
                     />
                   </div>
                 </div>
@@ -531,7 +585,6 @@ const FormComponent = () => {
                     required
                     placeholder="Enter your postal/zip code"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: "italic" }}
                   />
                 </div>
               </div>
@@ -553,7 +606,6 @@ const FormComponent = () => {
                     required
                     placeholder="Enter your receipt number"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: "italic" }}
                   />
                   {receiptExists && (
                     <p className="mt-2 text-sm text-red-600">
@@ -572,11 +624,10 @@ const FormComponent = () => {
                     type="text"
                     name="receiptDate"
                     value={formData.receiptDate}
-                    onChange={handleInputChange}
+                    onChange={handleReceiptDateChange}
                     required
-                    placeholder="dd/mm/yyy"
+                    placeholder="dd/mm/yyyy"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
-                    style={{ fontStyle: "italic" }}
                   />
                 </div>
               </div>
@@ -621,30 +672,49 @@ const FormComponent = () => {
                   className="hidden"
                 />
                 {imagePreview && (
-                  <div className="mt-4">
+                  <div className="mt-4 relative inline-block">
                     <img
                       src={imagePreview}
                       alt="Preview"
                       className="max-w-full h-auto max-h-64 rounded-md"
                     />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-700 transition shadow-lg"
+                      aria-label="Remove image"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
                   </div>
                 )}
               </div>
 
-               <div>
+              <div>
                 <h3
                   className="text-xl font-bold mb-4"
                   style={{ color: "#000" }}
                 >
-                  Where does Kirin
-                  Ichiban originally come from?
+                  Where does Kirin Ichiban originally come from?
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {["CHINA", "SOUTH KOREA", "JAPAN", "SINGAPORE"].map(
+                <div className="flex flex-wrap items-center">
+                  {["JAPAN", "SOUTH KOREA", "CHINA", "SINGAPORE"].map(
                     (country) => (
                       <label
                         key={country}
-                        className="flex items-center cursor-pointer"
+                        className="flex items-center cursor-pointer mr-8 mb-2"
                       >
                         <input
                           type="radio"
@@ -652,16 +722,15 @@ const FormComponent = () => {
                           value={country}
                           checked={formData.qnaAnswer === country}
                           onChange={handleInputChange}
-                          className="h-5 w-5"
+                          className="h-5 w-5 flex-shrink-0"
                           style={{ accentColor: "#E5B746" }}
                         />
-                        <span className="ml-2 font-semibold">{country}</span>
+                        <span className="ml-3 font-semibold whitespace-nowrap">{country}</span>
                       </label>
                     )
                   )}
                 </div>
               </div>
-
 
               {/* Terms */}
               <div>
@@ -748,7 +817,7 @@ const FormComponent = () => {
               </div>
 
               {/* Question */}
-        
+
               {/* Submit Button */}
               <div className="flex justify-center pt-8">
                 <button
@@ -760,7 +829,7 @@ const FormComponent = () => {
                       "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
                   }}
                 >
-                  {loading ? "SUBMITTING..." : "SUBMIT RECEIPT"}
+                  {loading ? "SUBMITTING..." : "SUBMIT"}
                 </button>
               </div>
             </form>
@@ -906,11 +975,22 @@ const FormComponent = () => {
                 </h3>
                 <div className="text-gray-700 italic space-y-3">
                   <div>
-                    <p className="font-semibold mb-2">Mechanics / Minimum Spend:</p>
+                    <p className="font-semibold mb-2">
+                      Mechanics / Minimum Spend:
+                    </p>
                     <ul className="list-none space-y-1 ml-4">
-                      <li>i. Purchase a total minimum of RM88 of any Kirin Ichiban products in a single receipt.</li>
-                      <li>ii. Scan QR code to submit the receipt via Contest Website.</li>
-                      <li>iii. Stand to win Kirin Ichiban Limited-Edition Mah Jong Set worth RM388 (100 winners).</li>
+                      <li>
+                        i. Purchase a total minimum of RM88 of any Kirin Ichiban
+                        products in a single receipt.
+                      </li>
+                      <li>
+                        ii. Scan QR code to submit the receipt via Contest
+                        Website.
+                      </li>
+                      <li>
+                        iii. Stand to win Kirin Ichiban Limited-Edition Mah Jong
+                        Set worth RM388 (100 winners).
+                      </li>
                     </ul>
                   </div>
                   <div>
@@ -932,9 +1012,18 @@ const FormComponent = () => {
                 </h3>
                 <div className="text-gray-700 italic">
                   <ol className="list-none space-y-2">
-                    <li>1) Scan the QR code found on the in-store point-of-sale materials or visit https://kirin-promotion.tongwohgroup.com/.</li>
-                    <li>2) Fill in the form and ensure all details are accurate.</li>
-                    <li>3) Upload your original receipt. Please make sure the proof of purchase is clear and legible for verification.</li>
+                    <li>
+                      1) Scan the QR code found on the in-store point-of-sale
+                      materials or visit
+                      https://kirin-promotion.tongwohgroup.com/.
+                    </li>
+                    <li>
+                      2) Fill in the form and ensure all details are accurate.
+                    </li>
+                    <li>
+                      3) Upload your original receipt. Please make sure the
+                      proof of purchase is clear and legible for verification.
+                    </li>
                   </ol>
                 </div>
               </div>
