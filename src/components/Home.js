@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Home = ({ onNavigateToForm }) => {
   const [winners, setWinners] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Replace this with your Google Apps Script Web App URL
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuGP2d-UqG6pxqrScREnvfhF4d-s7QAzl-96itpFRfCbPLopyNxc3ojgA-DuA6GmAJ/exec';
+  const GOOGLE_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbyuGP2d-UqG6pxqrScREnvfhF4d-s7QAzl-96itpFRfCbPLopyNxc3ojgA-DuA6GmAJ/exec";
 
   useEffect(() => {
     fetchWinners();
@@ -19,27 +20,29 @@ const Home = ({ onNavigateToForm }) => {
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getWinners`);
       const data = await response.json();
 
-      if (data.result === 'success') {
+      if (data.result === "success") {
         setWinners(data.data);
       } else {
-        toast.error('Failed to fetch winners');
+        toast.error("Failed to fetch winners");
       }
     } catch (error) {
-      console.error('Error fetching winners:', error);
-      toast.error('Error fetching winners');
+      console.error("Error fetching winners:", error);
+      toast.error("Error fetching winners");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{
-      backgroundImage: 'url(/Background.png)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      backgroundColor: '#F5F0E8'
-    }}>
+    <div
+      style={{
+        backgroundImage: "url(/Background.png)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundColor: "#F5F0E8",
+      }}
+    >
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -59,43 +62,57 @@ const Home = ({ onNavigateToForm }) => {
           src="/HomepagePoster.png"
           alt="Kirin Ichiban Promotion"
           className="w-full h-auto"
-          style={{ display: 'block' }}
+          style={{ display: "block" }}
         />
       </div>
 
       {/* Lorem Ipsum Section */}
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-5xl font-bold mb-6" style={{
-          fontFamily: 'BebasNeue, Arial, sans-serif',
-          color: '#F68B1F'
-        }}>
+        <h2
+          className="text-5xl font-bold mb-6"
+          style={{
+            fontFamily: "BebasNeue, Arial, sans-serif",
+            color: "#F68B1F",
+          }}
+        >
           PROSPERITY BEGINS WITH KIRIN ICHIBAN
         </h2>
-        <p className="text-lg mb-4" style={{ color: '#E5B746' }}>
-          Celebrate meaningful moments with a chance to win our Limited-Edition Kirin Ichiban
-Mah Jong Set.
+        <p className="text-lg mb-4" style={{ color: "#E5B746" }}>
+          Celebrate meaningful moments with a chance to win our Limited-Edition
+          Kirin Ichiban Mah Jong Set.
         </p>
-        <p className="text-base leading-relaxed" style={{ color: '#000' }}>
-          Step into the festive season with a celebration made for togetherness. This Chinese
-New Year, let Kirin Ichiban be the taste that completes your reunions, your celebrations,
-and the moments that matter most. Stand to win our Limited-Edition Kirin Ichiban Mah
-Jong Sets — a festive symbol of tradition and togetherness.orem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip
+        <p className="text-base leading-relaxed" style={{ color: "#000" }}>
+          Step into the festive season with a celebration made for togetherness.
+          This Chinese New Year, let Kirin Ichiban be the taste that completes
+          your reunions, your celebrations, and the moments that matter most.
+          Stand to win our Limited-Edition Kirin Ichiban Mah Jong Sets — a
+          festive symbol of tradition and togetherness.
         </p>
       </div>
 
       {/* Video Section */}
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <div className="relative rounded-2xl overflow-hidden shadow-2xl" style={{
-          backgroundColor: '#9B3D3D',
-          padding: '15px'
-        }}>
-          <div className="bg-black rounded-lg" style={{
-            paddingBottom: '56.25%',
-            position: 'relative'
-          }}>
+        <div
+          className="relative rounded-2xl overflow-hidden shadow-2xl"
+          style={{
+            backgroundColor: "#9B3D3D",
+            padding: "15px",
+          }}
+        >
+          <div
+            className="bg-black rounded-lg"
+            style={{
+              paddingBottom: "56.25%",
+              position: "relative",
+            }}
+          >
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-24 h-24 rounded-full bg-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-500 transition">
-                <svg className="w-12 h-12 text-white ml-2" fill="currentColor" viewBox="0 0 20 20">
+                <svg
+                  className="w-12 h-12 text-white ml-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
                   <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
                 </svg>
               </div>
@@ -106,10 +123,13 @@ Jong Sets — a festive symbol of tradition and togetherness.orem ipsum dolor si
 
       {/* Winner List Section */}
       <div className="max-w-6xl mx-auto px-4 py-16">
-        <h2 className="text-5xl font-bold text-center mb-12" style={{
-          fontFamily: 'BebasNeue, Arial, sans-serif',
-          color: '#F68B1F'
-        }}>
+        <h2
+          className="text-5xl font-bold text-center mb-12"
+          style={{
+            fontFamily: "BebasNeue, Arial, sans-serif",
+            color: "#F68B1F",
+          }}
+        >
           CONGRATULATIONS TO OUR WINNERS!
         </h2>
 
@@ -117,7 +137,7 @@ Jong Sets — a festive symbol of tradition and togetherness.orem ipsum dolor si
           <div className="flex justify-center items-center py-12">
             <svg
               className="animate-spin h-10 w-10"
-              style={{ color: '#E5B746' }}
+              style={{ color: "#E5B746" }}
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -139,7 +159,7 @@ Jong Sets — a festive symbol of tradition and togetherness.orem ipsum dolor si
           </div>
         ) : winners.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-xl font-medium" style={{ color: '#000' }}>
+            <p className="text-xl font-medium" style={{ color: "#000" }}>
               Winners will be released soon
             </p>
             <p className="text-gray-600 mt-2">
@@ -147,33 +167,45 @@ Jong Sets — a festive symbol of tradition and togetherness.orem ipsum dolor si
             </p>
           </div>
         ) : (
-          <div style={{
-            borderRadius: '16px',
-            overflow: 'hidden',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-          }}>
+          <div
+            style={{
+              borderRadius: "16px",
+              overflow: "hidden",
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            }}
+          >
             {/* Header */}
-            <div style={{
-              background: 'linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)',
-              padding: '20px 16px',
-              textAlign: 'center'
-            }}>
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">WINNER LIST</h2>
-                </div>
+            <div
+              style={{
+                background: "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
+                padding: "20px 16px",
+                textAlign: "center",
+              }}
+            >
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                WINNER LIST
+              </h2>
+            </div>
 
             {/* Content */}
-            <div style={{
-              backgroundColor: '#F5F0E8',
-              padding: '24px 16px',
-              minHeight: '400px'
-            }}>
+            <div
+              style={{
+                backgroundColor: "#F5F0E8",
+                padding: "24px 16px",
+                minHeight: "400px",
+              }}
+            >
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 max-w-[1200px] mx-auto">
                 {winners.map((winner, idx) => (
-                  <div key={idx} className="font-bold text-xs sm:text-sm lg:text-base text-center" style={{
-                    color: '#000'
-                  }}>
+                  <div
+                    key={idx}
+                    className="font-bold text-xs sm:text-sm lg:text-base text-center"
+                    style={{
+                      color: "#000",
+                    }}
+                  >
                     {winner.name}
-                </div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -182,7 +214,7 @@ Jong Sets — a festive symbol of tradition and togetherness.orem ipsum dolor si
       </div>
 
       {/* Footer */}
-      <div className="py-6 text-center" style={{ backgroundColor: '#E5B746' }}>
+      <div className="py-6 text-center" style={{ backgroundColor: "#E5B746" }}>
         <p className="text-black font-bold text-[10px] sm:text-sm lg:text-base">
           <a
             href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
@@ -191,8 +223,8 @@ Jong Sets — a festive symbol of tradition and togetherness.orem ipsum dolor si
             className="hover:underline"
           >
             TERMS & CONDITION APPLIES
-          </a>
-          {' '} • {' '}
+          </a>{" "}
+          •{" "}
           <a
             href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
             target="_blank"
