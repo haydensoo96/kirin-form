@@ -122,7 +122,7 @@ const DateOfBirth = ({ onContinue }) => {
           <p className="text-sm md:text-base leading-tight mb-1" style={{ color: '#000' }}>
             This content is intended for those of legal drinking age,
           </p>
-          <p className="text-sm md:text-base leading-tight mb-8" style={{ color: '#000' }}>
+          <p className="text-sm md:text-base leading-tight mb-12" style={{ color: '#000' }}>
             please do not share or forward to anyone underage.
           </p>
           <p className="text-sm md:text-base leading-relaxed font-semibold" style={{ color: '#000' }}>
