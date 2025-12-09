@@ -983,7 +983,7 @@ const FormComponent = () => {
                   Who can participate in this Kirin Ichiban 2026 Chinese New
                   Year promotion?{" "}
                 </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   This promotion is open to all non-Muslim residents of West
                   Malaysia aged 21 years and above. All entries must comply with
                   the official Terms & Conditions.{" "}
@@ -996,7 +996,7 @@ const FormComponent = () => {
                 >
                   When is the contest period?{" "}
                 </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   The Kirin Ichiban 2026 Chinese New Year promotion runs from
                   26th December 2025 – 1 st February 2026.{" "}
                 </p>
@@ -1008,7 +1008,7 @@ const FormComponent = () => {
                 >
                   How can I participate in this promotion?{" "}
                 </h3>
-                <div className="text-xs sm:text-sm lg:text-base text-gray-700 italic space-y-3">
+                <div className="text-xs sm:text-sm lg:text-base text-gray-700 space-y-3">
                   <div>
                     <p className="font-semibold mb-2">
                       Mechanics / Minimum Spend:
@@ -1045,7 +1045,7 @@ const FormComponent = () => {
                 >
                   How do I submit my receipt?{" "}
                 </h3>
-                <div className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
+                <div className="text-xs sm:text-sm lg:text-base text-gray-700">
                   <ol className="list-none space-y-2">
                     <li>
                       1) Scan the QR code found on the in-store point-of-sale
@@ -1070,7 +1070,7 @@ const FormComponent = () => {
                   Can I combine multiple receipts to participate in the
                   promotion?
                 </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   No. Each entry must be submitted using one single receipt
                   only.{" "}
                 </p>
@@ -1082,7 +1082,7 @@ const FormComponent = () => {
                 >
                   What receipts are considered valid?
                 </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   Receipts must clearly show the store name, date, purchased
                   Kirin Ichiban products, price, and total amount. Handwritten
                   receipts, altered receipts, or unclear images will not be
@@ -1097,7 +1097,7 @@ const FormComponent = () => {
                   Is there a limit to how many entries I can submit throughout
                   the campaign period?
                 </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   There is no limit to the number of entries. Participants may
                   submit as many valid entries as they wish, as long as each
                   entry uses a different receipt and meets all Terms &
@@ -1111,7 +1111,7 @@ const FormComponent = () => {
                 >
                   How do I check my entry status?
                 </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   Participants may check their entry status via the mobile
                   number submitted at https://kirin-promotion.tongwohgroup.com/.
                 </p>
@@ -1123,7 +1123,7 @@ const FormComponent = () => {
                 >
                   How will I know if I am selected as a winner?
                 </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   Winners will be announced on our official social media
                   channels: Instagram @kirinichibanmy and Facebook Kirin Ichiban
                   Malaysia. Participants may also check the winners list at
@@ -1137,7 +1137,7 @@ const FormComponent = () => {
                 >
                   How will the prizes be delivered?
                 </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   Winners will be contacted for delivery arrangements. Prizes
                   will be delivered only to addresses within West Malaysia.{" "}
                 </p>
@@ -1149,7 +1149,7 @@ const FormComponent = () => {
                 >
                   Can I transfer my prize to someone else?
                 </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   No. All prizes are non-transferable, non-exchangeable, and
                   cannot be redeemed for cash or other alternatives.
                 </p>
@@ -1162,7 +1162,7 @@ const FormComponent = () => {
                   Are there any taxes or additional fees associated with the
                   prize?
                 </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   No. The prize is not subject to additional taxes or fees.
                   Winners will receive the prize exactly as described in the
                   Terms & Conditions.
@@ -1175,7 +1175,7 @@ const FormComponent = () => {
                 >
                   Who can I contact if I have more questions?{" "}
                 </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 italic">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   For further assistance, please email us at: enquiry@twe.my
                 </p>
               </div>

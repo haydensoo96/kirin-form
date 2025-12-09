@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Home from './components/Home';
 import FormComponent from './components/FormComponent';
 import DateOfBirth from './components/DateOfBirth';
@@ -7,7 +7,17 @@ function App() {
   const [dobCompleted, setDobCompleted] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
 
+  // Check localStorage on mount for age verification
+  useEffect(() => {
+    const ageVerified = localStorage.getItem('kirinAgeVerified');
+    if (ageVerified === 'true') {
+      setDobCompleted(true);
+    }
+  }, []);
+
   const handleDobContinue = () => {
+    // Save age verification to localStorage
+    localStorage.setItem('kirinAgeVerified', 'true');
     setDobCompleted(true);
   };
 

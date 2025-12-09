@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "@fontsource/merriweather/700.css"; // Bold weight
+import "@fontsource/merriweather/900.css"; // Black weight
 
 const Home = ({ onNavigateToForm }) => {
   const [winners, setWinners] = useState([]);
@@ -76,6 +77,7 @@ const Home = ({ onNavigateToForm }) => {
           style={{
             fontFamily: "'Merriweather', serif",
             color: "#F68B1F",
+            fontWeight: 900,
           }}
         >
           PROSPERITY BEGINS WITH KIRIN ICHIBAN
