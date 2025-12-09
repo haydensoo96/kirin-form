@@ -34,6 +34,8 @@ const FormComponent = () => {
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbyuGP2d-UqG6pxqrScREnvfhF4d-s7QAzl-96itpFRfCbPLopyNxc3ojgA-DuA6GmAJ/exec";
 
+  const PDF_URL = `${window.location.origin}/Kirin_Ichiban_Stand_to_Win_TnC.pdf`;
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -74,54 +76,8 @@ const FormComponent = () => {
   };
 
   const handleReceiptDateChange = (e) => {
-    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
-
-    if (value.length <= 8) {
-      // Validate day (01-31)
-      if (value.length >= 1) {
-        const firstDigit = parseInt(value[0]);
-        if (firstDigit > 3) {
-          value = '0' + value[0]; // Prepend 0 if first digit > 3
-        }
-      }
-      if (value.length >= 2) {
-        const day = parseInt(value.slice(0, 2));
-        if (day > 31 || day === 0) {
-          return; // Don't update if invalid day
-        }
-      }
-
-      // Validate month (01-12)
-      if (value.length >= 3) {
-        const monthFirstDigit = parseInt(value[2]);
-        if (monthFirstDigit > 1) {
-          return; // Don't allow month to start with digit > 1
-        }
-      }
-      if (value.length >= 4) {
-        const month = parseInt(value.slice(2, 4));
-        if (month > 12 || month === 0) {
-          return; // Don't update if invalid month
-        }
-      }
-
-      // Validate year (1950-2025)
-      if (value.length >= 8) {
-        const year = parseInt(value.slice(4, 8));
-        if (year < 1950 || year > 2025) {
-          return; // Don't update if invalid year
-        }
-      }
-
-      // Auto-format as dd/mm/yyyy
-      if (value.length >= 2) {
-        value = value.slice(0, 2) + '/' + value.slice(2);
-      }
-      if (value.length >= 5) {
-        value = value.slice(0, 5) + '/' + value.slice(5);
-      }
-      setFormData((prev) => ({ ...prev, receiptDate: value }));
-    }
+    // Date input returns yyyy-mm-dd format
+    setFormData((prev) => ({ ...prev, receiptDate: e.target.value }));
   };
 
   const handleRemoveImage = () => {
@@ -245,22 +201,22 @@ const FormComponent = () => {
       return;
     }
 
-    // Validate receipt date format dd/mm/yyyy
-    const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    // Validate receipt date format yyyy-mm-dd (from date input)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(formData.receiptDate)) {
-      toast.error("Receipt date must be in dd/mm/yyyy format");
+      toast.error("Please select a valid receipt date");
       return;
     }
 
     // Validate receipt date is a valid date
-    const dateParts = formData.receiptDate.split('/');
-    const day = parseInt(dateParts[0], 10);
+    const dateParts = formData.receiptDate.split('-');
+    const year = parseInt(dateParts[0], 10);
     const month = parseInt(dateParts[1], 10);
-    const year = parseInt(dateParts[2], 10);
+    const day = parseInt(dateParts[2], 10);
 
     // Check year range
-    if (year < 1950 || year > 2025) {
-      toast.error("Receipt year must be between 1950 and 2025");
+    if (year < 2024 || year > 2026) {
+      toast.error("Receipt date must be within the promotion period");
       return;
     }
 
@@ -270,6 +226,9 @@ const FormComponent = () => {
       toast.error("Please enter a valid receipt date");
       return;
     }
+
+    // Convert to dd/mm/yyyy format for backend
+    const formattedDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
 
     setLoading(true);
     try {
@@ -293,7 +252,7 @@ const FormComponent = () => {
         email: formData.email,
         address: combinedAddress,
         receiptNumber: formData.receiptNumber,
-        receiptDate: formData.receiptDate,
+        receiptDate: formattedDate,
         image: imageBase64,
         imageName: imageFile.name,
         qnaAnswer: formData.qnaAnswer,
@@ -531,7 +490,7 @@ const FormComponent = () => {
                     PHONE NUMBER<span className="text-red-600">*</span>
                   </label>
                   <input
-                    type="text"
+                    type="tel"
                     name="mobileNumber"
                     value={formData.mobileNumber}
                     onChange={handlePhoneChange}
@@ -688,13 +647,15 @@ const FormComponent = () => {
                     RECEIPT DATE<span className="text-red-600">*</span>
                   </label>
                   <input
-                    type="text"
+                    type="date"
                     name="receiptDate"
                     value={formData.receiptDate}
                     onChange={handleReceiptDateChange}
                     required
-                    placeholder="dd/mm/yyyy"
-                    className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                    min="2024-12-26"
+                    max="2026-02-01"
+                    className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black"
+                    style={{ colorScheme: "light" }}
                   />
                 </div>
               </div>
@@ -776,12 +737,12 @@ const FormComponent = () => {
                 >
                   Where does Kirin Ichiban originally come from?
                 </h3>
-                <div className="flex flex-wrap items-center">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   {["JAPAN", "SOUTH KOREA", "CHINA", "SINGAPORE"].map(
                     (country) => (
                       <label
                         key={country}
-                        className="flex items-center cursor-pointer mr-8 mb-2"
+                        className="flex items-center cursor-pointer"
                       >
                         <input
                           type="radio"
@@ -841,7 +802,7 @@ const FormComponent = () => {
                     <span className="ml-3 text-xs sm:text-sm">
                       <span className="text-red-600">*</span> I agree to the{" "}
                       <a
-                        href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
+                        href={PDF_URL}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="underline hover:text-blue-600"
@@ -851,7 +812,7 @@ const FormComponent = () => {
                       </a>{" "}
                       and{" "}
                       <a
-                        href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
+                        href={PDF_URL}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="underline hover:text-blue-600"
@@ -923,7 +884,7 @@ const FormComponent = () => {
                 MOBILE NUMBER<span className="text-red-600">*</span>
               </label>
               <input
-                type="text"
+                type="tel"
                 value={trackingMobileNumber}
                 onChange={handleTrackingPhoneChange}
                 placeholder="Eg. +60123456789"
@@ -1235,7 +1196,7 @@ const FormComponent = () => {
       >
         <p className="text-black font-bold text-[10px] sm:text-sm lg:text-base">
           <a
-            href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
+            href={PDF_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:underline"
@@ -1244,7 +1205,7 @@ const FormComponent = () => {
           </a>{" "}
           •{" "}
           <a
-            href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
+            href={PDF_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:underline"

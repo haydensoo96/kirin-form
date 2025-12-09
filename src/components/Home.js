@@ -11,6 +11,8 @@ const Home = ({ onNavigateToForm }) => {
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbyuGP2d-UqG6pxqrScREnvfhF4d-s7QAzl-96itpFRfCbPLopyNxc3ojgA-DuA6GmAJ/exec";
 
+  const PDF_URL = `${window.location.origin}/Kirin_Ichiban_Stand_to_Win_TnC.pdf`;
+
   useEffect(() => {
     fetchWinners();
   }, []);
@@ -70,7 +72,7 @@ const Home = ({ onNavigateToForm }) => {
       {/* Lorem Ipsum Section */}
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
         <h2
-          className="text-xl sm:text-3xl lg:text-5xl font-bold mb-6"
+          className="text-xl sm:text-3xl lg:text-5xl font-bold mb-6 whitespace-nowrap"
           style={{
             fontFamily: "'Crimson Text', serif",
             color: "#F68B1F",
@@ -218,7 +220,7 @@ const Home = ({ onNavigateToForm }) => {
       <div className="py-6 text-center" style={{ backgroundColor: "#E5B746" }}>
         <p className="text-black font-bold text-[10px] sm:text-sm lg:text-base">
           <a
-            href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
+            href={PDF_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:underline"
@@ -227,7 +229,7 @@ const Home = ({ onNavigateToForm }) => {
           </a>{" "}
           •{" "}
           <a
-            href="/Kirin_Ichiban_Stand_to_Win_TnC.pdf"
+            href={PDF_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:underline"
