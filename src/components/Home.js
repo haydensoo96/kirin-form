@@ -72,7 +72,7 @@ const Home = ({ onNavigateToForm }) => {
       {/* Lorem Ipsum Section */}
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
         <h2
-          className="text-xl sm:text-3xl lg:text-5xl font-bold mb-6 whitespace-nowrap"
+          className="text-xl sm:text-3xl lg:text-4xl font-bold text-center mb-6 lg:whitespace-nowrap"
           style={{
             fontFamily: "'Merriweather', serif",
             color: "#F68B1F",
