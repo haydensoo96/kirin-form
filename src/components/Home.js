@@ -9,7 +9,7 @@ const Home = ({ onNavigateToForm }) => {
 
   // Replace this with your Google Apps Script Web App URL
   const GOOGLE_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbyuGP2d-UqG6pxqrScREnvfhF4d-s7QAzl-96itpFRfCbPLopyNxc3ojgA-DuA6GmAJ/exec";
+    "https://script.google.com/macros/s/AKfycby6jE0I_3230OxSnx5BtMezrWR3Sz1kPGYYvuJzhGLyQRJL9q90etN-pl9wkWwgsasP/exec";
 
   const PDF_URL = `${window.location.origin}/Kirin_Ichiban_Stand_to_Win_TnC.pdf`;
 
