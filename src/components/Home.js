@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "@fontsource/crimson-text/700.css"; // Bold weight
+import "@fontsource/merriweather/700.css"; // Bold weight
 
 const Home = ({ onNavigateToForm }) => {
   const [winners, setWinners] = useState([]);
@@ -74,7 +74,7 @@ const Home = ({ onNavigateToForm }) => {
         <h2
           className="text-xl sm:text-3xl lg:text-5xl font-bold mb-6 whitespace-nowrap"
           style={{
-            fontFamily: "'Crimson Text', serif",
+            fontFamily: "'Merriweather', serif",
             color: "#F68B1F",
           }}
         >
@@ -129,7 +129,7 @@ const Home = ({ onNavigateToForm }) => {
         <h2
           className="text-xl sm:text-3xl lg:text-5xl font-bold text-center mb-12"
           style={{
-            fontFamily: "'Crimson Text', serif",
+            fontFamily: "'Merriweather', serif",
             color: "#F68B1F",
           }}
         >

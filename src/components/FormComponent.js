@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "@fontsource/crimson-text/700.css"; // Bold weight
+import "@fontsource/merriweather/700.css"; // Bold weight
 
 const FormComponent = () => {
   const [activeTab, setActiveTab] = useState("submit");
@@ -409,7 +409,7 @@ const FormComponent = () => {
             <h1
               className="text-xl sm:text-3xl lg:text-5xl font-bold text-center mb-12"
               style={{
-                fontFamily: "'Crimson Text', serif",
+                fontFamily: "'Merriweather', serif",
                 color: "#F68B1F",
               }}
             >
@@ -870,7 +870,7 @@ const FormComponent = () => {
             <h1
               className="text-lg sm:text-2xl lg:text-3xl font-bold text-center mb-8"
               style={{
-                fontFamily: "'Crimson Text', serif",
+                fontFamily: "'Merriweather', serif",
                 color: "#F68B1F"
               }}
             >
@@ -966,7 +966,7 @@ const FormComponent = () => {
             <h1
               className="text-xl sm:text-3xl lg:text-4xl font-bold text-center mb-12"
               style={{
-                fontFamily: "'Crimson Text', serif",
+                fontFamily: "'Merriweather', serif",
                 color: "#F68B1F"
               }}
             >
