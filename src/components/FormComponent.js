@@ -248,7 +248,7 @@ const FormComponent = () => {
         segment: formData.segment,
         fullName: formData.fullName,
         nric: formData.nric,
-        mobileNumber: formData.mobileNumber,
+        mobileNumber: formData.mobileNumber.replace('+', ''),
         email: formData.email,
         address: combinedAddress,
         receiptNumber: formData.receiptNumber,
@@ -310,8 +310,10 @@ const FormComponent = () => {
     }
     setLoadingSubmissions(true);
     try {
+      // Remove + sign for tracking to match stored format
+      const cleanedNumber = mobileNumber.replace('+', '');
       const response = await fetch(
-        `${GOOGLE_SCRIPT_URL}?action=getSubmissionsByMobileNumber&mobileNumber=${mobileNumber}`
+        `${GOOGLE_SCRIPT_URL}?action=getSubmissionsByMobileNumber&mobileNumber=${cleanedNumber}`
       );
       const data = await response.json();
       if (data.result === "success") {
