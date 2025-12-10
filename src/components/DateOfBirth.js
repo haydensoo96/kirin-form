@@ -110,16 +110,16 @@ const DateOfBirth = ({ onContinue }) => {
 
         {/* Row 3: Terms and Conditions */}
         <div className="text-center mb-8 px-4">
-          <p className="text-sm md:text-base leading-relaxed mb-4" style={{ color: '#000' }}>
+          <p className="text-sm md:text-base leading-relaxed" style={{ color: '#000' }}>
             Kirin Ichiban is committed to<br />responsible drinking.
           </p>
-          <p className="text-sm md:text-base leading-relaxed mb-4" style={{ color: '#000' }}>
+          <p className="text-sm md:text-base leading-relaxed" style={{ color: '#000' }}>
             Which is why we need to ensure that you are<br />above the legal drinking age
           </p>
-          <p className="text-sm md:text-base leading-relaxed mb-4" style={{ color: '#000' }}>
+          <p className="text-sm md:text-base leading-relaxed" style={{ color: '#000' }}>
             and that you are legally permitted to view this<br />site in the country you are in.
           </p>
-          <p className="text-sm md:text-base leading-relaxed mb-4" style={{ color: '#000' }}>
+          <p className="text-sm md:text-base leading-relaxed" style={{ color: '#000' }}>
             This content is intended for those of<br />legal drinking age,
           </p>
           <p className="text-sm md:text-base leading-relaxed mb-8" style={{ color: '#000' }}>

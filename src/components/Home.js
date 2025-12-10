@@ -80,7 +80,7 @@ const Home = ({ onNavigateToForm }) => {
             fontWeight: 900,
           }}
         >
-          PROSPERITY BEGINS WITH KIRIN ICHIBAN
+          PROSPERITY BEGINS WITH <span className="whitespace-nowrap">KIRIN ICHIBAN</span>
         </h2>
         <p className="text-sm sm:text-base lg:text-lg mb-4" style={{ color: "#E5B746" }}>
           Celebrate meaningful moments with a chance to win our Limited-Edition
