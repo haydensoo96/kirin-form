@@ -110,20 +110,20 @@ const DateOfBirth = ({ onContinue }) => {
 
         {/* Row 3: Terms and Conditions */}
         <div className="text-center mb-8 px-4">
-          <p className="text-sm md:text-base leading-tight mb-1" style={{ color: '#000' }}>
-            Kirin Ichiban is committed to responsible drinking.
+          <p className="text-sm md:text-base leading-relaxed mb-4" style={{ color: '#000' }}>
+            Kirin Ichiban is committed to<br />responsible drinking.
           </p>
-          <p className="text-sm md:text-base leading-tight mb-1" style={{ color: '#000' }}>
-            Which is why we need to ensure that you are above the legal drinking age
+          <p className="text-sm md:text-base leading-relaxed mb-4" style={{ color: '#000' }}>
+            Which is why we need to ensure that you are<br />above the legal drinking age
           </p>
-          <p className="text-sm md:text-base leading-tight mb-1" style={{ color: '#000' }}>
-            and that you are legally permitted to view this site in the country you are in.
+          <p className="text-sm md:text-base leading-relaxed mb-4" style={{ color: '#000' }}>
+            and that you are legally permitted to view this<br />site in the country you are in.
           </p>
-          <p className="text-sm md:text-base leading-tight mb-1" style={{ color: '#000' }}>
-            This content is intended for those of legal drinking age,
+          <p className="text-sm md:text-base leading-relaxed mb-4" style={{ color: '#000' }}>
+            This content is intended for those of<br />legal drinking age,
           </p>
-          <p className="text-sm md:text-base leading-tight mb-12" style={{ color: '#000' }}>
-            please do not share or forward to anyone underage.
+          <p className="text-sm md:text-base leading-relaxed mb-8" style={{ color: '#000' }}>
+            please do not share or forward to<br />anyone underage.
           </p>
           <p className="text-sm md:text-base leading-relaxed font-semibold" style={{ color: '#000' }}>
             Please verify your age to continue.
