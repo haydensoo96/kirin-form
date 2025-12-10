@@ -739,7 +739,7 @@ const FormComponent = () => {
                 >
                   Where does Kirin Ichiban originally come from?
                 </h3>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 gap-4 lg:flex lg:justify-between lg:gap-0">
                   {["JAPAN", "SOUTH KOREA", "CHINA", "SINGAPORE"].map(
                     (country) => (
                       <label

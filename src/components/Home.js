@@ -82,9 +82,9 @@ const Home = ({ onNavigateToForm }) => {
         >
           PROSPERITY BEGINS WITH <span className="whitespace-nowrap">KIRIN ICHIBAN</span>
         </h2>
-        <p className="text-sm sm:text-base lg:text-lg mb-4" style={{ color: "#E5B746" }}>
-          Celebrate meaningful moments with a chance to win our Limited-Edition
-          Kirin Ichiban Mah Jong Set.
+        <p className="text-sm sm:text-base lg:text-lg mb-4 leading-tight" style={{ color: "#E5B746" }}>
+          Celebrate meaningful moments with a chance to win our<br />
+          Limited-Edition Kirin Ichiban Mah Jong Set.
         </p>
         <p className="text-xs sm:text-sm lg:text-base leading-relaxed" style={{ color: "#000" }}>
           Step into the festive season with a celebration made for togetherness.
