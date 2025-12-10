@@ -12,7 +12,7 @@ const Home = ({ onNavigateToForm }) => {
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycby6jE0I_3230OxSnx5BtMezrWR3Sz1kPGYYvuJzhGLyQRJL9q90etN-pl9wkWwgsasP/exec";
 
-  const PDF_URL = `${window.location.origin}/Kirin_Ichiban_Stand_to_Win_TnC.pdf`;
+  const PDF_URL = "https://drive.google.com/file/d/1B44A6eVs434zoKVr5ACAJFVFdgDDbEF0/preview";
 
   useEffect(() => {
     fetchWinners();
