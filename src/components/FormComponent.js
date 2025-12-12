@@ -998,7 +998,7 @@ const FormComponent = () => {
                 </h3>
                 <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   The Kirin Ichiban 2026 Chinese New Year promotion runs from
-                  26th December 2025 – 1 st February 2026.{" "}
+                  26th December 2025 – 1st February 2026.{" "}
                 </p>
               </div>
               <div>
@@ -1033,7 +1033,7 @@ const FormComponent = () => {
                     <ul className="list-none space-y-1 ml-4">
                       <li>i. Hypermarket / Supermarkets / MOFT</li>
                       <li>ii. Convenience Stores (CVS)</li>
-                      <li>iii. E-commerce platforms (Shopee/ Lazada)</li>
+                      <li>iii. E-commerce platforms (Shopee / Lazada)</li>
                     </ul>
                   </div>
                 </div>
