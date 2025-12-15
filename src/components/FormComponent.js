@@ -31,10 +31,9 @@ const FormComponent = () => {
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [receiptExists, setReceiptExists] = useState(false);
 
-  const GOOGLE_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycby6jE0I_3230OxSnx5BtMezrWR3Sz1kPGYYvuJzhGLyQRJL9q90etN-pl9wkWwgsasP/exec";
-
-  const PDF_URL = "https://drive.google.com/file/d/1B44A6eVs434zoKVr5ACAJFVFdgDDbEF0/preview";
+  const GOOGLE_SCRIPT_URL = process.env.REACT_APP_GOOGLE_SCRIPT_URL;
+  const PDF_URL = process.env.REACT_APP_PDF_URL;
+  const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -133,7 +132,7 @@ const FormComponent = () => {
           setReceiptExists(data.exists);
         }
       } catch (error) {
-        console.error("Error checking receipt number:", error);
+        // Error checking receipt number
       }
     },
     [GOOGLE_SCRIPT_URL]
@@ -145,6 +144,26 @@ const FormComponent = () => {
     }, 500);
     return () => clearTimeout(timeoutId);
   }, [formData.receiptNumber, checkReceiptNumberExists]);
+
+
+  // Load reCAPTCHA script dynamically
+  useEffect(() => {
+    if (RECAPTCHA_SITE_KEY && !window.grecaptcha) {
+      const script = document.createElement('script');
+      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+
+      script.onload = () => {
+        // reCAPTCHA loaded
+      };
+
+      script.onerror = () => {
+        // reCAPTCHA failed to load
+      };
+    }
+  }, [RECAPTCHA_SITE_KEY]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -232,6 +251,20 @@ const FormComponent = () => {
 
     setLoading(true);
     try {
+      // Get reCAPTCHA token if enabled
+      let recaptchaToken = null;
+      if (RECAPTCHA_SITE_KEY && window.grecaptcha) {
+        try {
+          recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
+            action: "submit_form",
+          });
+        } catch (error) {
+          toast.error("Security verification failed. Please try again.");
+          setLoading(false);
+          return;
+        }
+      }
+
       const imageBase64 = await convertImageToBase64(imageFile);
       // Combine address fields
       const combinedAddress = [
@@ -257,6 +290,7 @@ const FormComponent = () => {
         imageName: imageFile.name,
         qnaAnswer: formData.qnaAnswer,
         timestamp: new Date().toISOString(),
+        recaptchaToken: recaptchaToken,
       };
 
       await fetch(GOOGLE_SCRIPT_URL, {
@@ -266,7 +300,12 @@ const FormComponent = () => {
         body: JSON.stringify(submissionData),
       });
 
+      // Note: With no-cors mode, we can't read the response
+      // But we assume success if no error is thrown
+      // The backend will still validate everything (reCAPTCHA, rate limiting, etc.)
+
       toast.success("Form submitted successfully!");
+
       setFormData({
         segment: "",
         fullName: "",
@@ -290,7 +329,6 @@ const FormComponent = () => {
       setReceiptExists(false);
       document.getElementById("image-upload").value = "";
     } catch (error) {
-      console.error("Error submitting form:", error);
       toast.error("Error submitting form. Please try again.");
     } finally {
       setLoading(false);
@@ -302,19 +340,24 @@ const FormComponent = () => {
       toast.error("Please enter a valid mobile number");
       return;
     }
+
     // Validate phone number format +60XXXXXXXXX (9-10 digits after +60)
     const phoneRegex = /^\+60\d{9,10}$/;
     if (!phoneRegex.test(mobileNumber)) {
       toast.error("Phone number must be +60 followed by 9-10 digits");
       return;
     }
+
     setLoadingSubmissions(true);
     try {
       // Remove + sign for tracking to match stored format
       const cleanedNumber = mobileNumber.replace('+', '');
-      const response = await fetch(
-        `${GOOGLE_SCRIPT_URL}?action=getSubmissionsByMobileNumber&mobileNumber=${cleanedNumber}`
-      );
+      const queryParams = new URLSearchParams({
+        action: 'getSubmissionsByMobileNumber',
+        mobileNumber: cleanedNumber
+      });
+
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?${queryParams}`);
       const data = await response.json();
       if (data.result === "success") {
         setSubmissions(data.data);
@@ -322,10 +365,9 @@ const FormComponent = () => {
           toast.info("No submissions found for this mobile number");
         }
       } else {
-        toast.error("Failed to fetch submissions");
+        toast.error(data.message || "Failed to fetch submissions");
       }
     } catch (error) {
-      console.error("Error fetching submissions:", error);
       toast.error("Error fetching submissions");
     } finally {
       setLoadingSubmissions(false);
@@ -879,27 +921,27 @@ const FormComponent = () => {
               ENTER YOUR MOBILE NUMBER AND TRACK YOUR ENTRY STATUS
             </h1>
             <div className="max-w-2xl mx-auto">
-              <label
-                className="block text-base font-bold mb-4"
-                style={{ color: "#000" }}
-              >
-                MOBILE NUMBER<span className="text-red-600">*</span>
-              </label>
-              <input
-                type="tel"
-                value={trackingMobileNumber}
-                onChange={handleTrackingPhoneChange}
-                placeholder="Eg. +60123456789"
-                className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none text-gray-400"
-                style={{ fontStyle: "italic" }}
-              />
+                <label
+                  className="block text-base font-bold mb-4"
+                  style={{ color: "#000" }}
+                >
+                  MOBILE NUMBER<span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="tel"
+                  value={trackingMobileNumber}
+                  onChange={handleTrackingPhoneChange}
+                  placeholder="Eg. +60123456789"
+                  className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none text-gray-400"
+                  style={{ fontStyle: "italic" }}
+                />
               <div className="flex justify-center mt-8">
                 <button
                   onClick={() =>
                     fetchSubmissionsByMobileNumber(trackingMobileNumber)
                   }
                   disabled={loadingSubmissions}
-                  className="px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-white rounded-full shadow-lg"
+                  className="px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-white rounded-full shadow-lg disabled:opacity-50"
                   style={{
                     background:
                       "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
