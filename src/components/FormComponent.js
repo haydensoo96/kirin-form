@@ -479,6 +479,7 @@ const FormComponent = () => {
                   <option value="">Choose your segment</option>
                   <option value="Supermarket">Supermarket/Hypermarket</option>
                   <option value="Convenience Store">Convenience Store</option>
+                  <option value="Restaurant/Bar">Restaurant/Bar</option>
                   <option value="Ecomm(Shopee/Lazada)">
                     Ecomm(Shopee/Lazada)
                   </option>
@@ -1075,7 +1076,8 @@ const FormComponent = () => {
                     <ul className="list-none space-y-1 ml-4">
                       <li>i. Hypermarket / Supermarkets / MOFT</li>
                       <li>ii. Convenience Stores (CVS)</li>
-                      <li>iii. E-commerce platforms (Shopee / Lazada)</li>
+                      <li>iii. Restaurant / Bar</li>
+                      <li>iv. E-commerce platforms (Shopee / Lazada)</li>
                     </ul>
                   </div>
                 </div>
