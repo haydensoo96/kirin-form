@@ -98,26 +98,18 @@ const Home = ({ onNavigateToForm }) => {
       {/* Video Section */}
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div
-          className="relative rounded-2xl overflow-hidden shadow-2xl"
+          className="relative overflow-hidden"
           style={{
-            backgroundColor: "#9B3D3D",
-            padding: "15px",
+            paddingBottom: "56.25%",
+            position: "relative",
           }}
         >
-          <div
-            className="rounded-lg overflow-hidden"
-            style={{
-              paddingBottom: "56.25%",
-              position: "relative",
-            }}
-          >
-            <iframe
-              src="https://drive.google.com/file/d/1CxYdqSN2sNLmgCjXsaS4dh2XvohtQ4bJ/preview"
-              className="absolute top-0 left-0 w-full h-full"
-              allow="autoplay"
-              title="Kirin Ichiban Promotion Video"
-            />
-          </div>
+          <iframe
+            src="https://drive.google.com/file/d/1CxYdqSN2sNLmgCjXsaS4dh2XvohtQ4bJ/preview"
+            className="absolute top-0 left-0 w-full h-full"
+            allow="autoplay"
+            title="Kirin Ichiban Promotion Video"
+          />
         </div>
       </div>
 
