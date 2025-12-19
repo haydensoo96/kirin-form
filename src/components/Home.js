@@ -105,23 +105,18 @@ const Home = ({ onNavigateToForm }) => {
           }}
         >
           <div
-            className="bg-black rounded-lg"
+            className="rounded-lg overflow-hidden"
             style={{
               paddingBottom: "56.25%",
               position: "relative",
             }}
           >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-24 h-24 rounded-full bg-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-500 transition">
-                <svg
-                  className="w-12 h-12 text-white ml-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                </svg>
-              </div>
-            </div>
+            <iframe
+              src="https://drive.google.com/file/d/1CxYdqSN2sNLmgCjXsaS4dh2XvohtQ4bJ/preview"
+              className="absolute top-0 left-0 w-full h-full"
+              allow="autoplay"
+              title="Kirin Ichiban Promotion Video"
+            />
           </div>
         </div>
       </div>
