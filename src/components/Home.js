@@ -72,6 +72,19 @@ const Home = ({ onNavigateToForm }) => {
 
       {/* Lorem Ipsum Section */}
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+        {/* Receipt Submission Button */}
+        <div className="mb-8">
+          <button
+            onClick={onNavigateToForm}
+            className="px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-white rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+            style={{
+              background: "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
+            }}
+          >
+            RECEIPT SUBMISSION
+          </button>
+        </div>
+
         <h2
           className="text-xl sm:text-3xl lg:text-4xl font-bold text-center mb-6 lg:whitespace-nowrap"
           style={{
