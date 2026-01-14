@@ -9,9 +9,7 @@ const Home = ({ onNavigateToForm }) => {
   const [loading, setLoading] = useState(true);
 
   // Replace this with your Google Apps Script Web App URL
-  const GOOGLE_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbx7XhpVc1_9jeNsg-sDi7wb5n_dw0Pah8Eu6fK1Zt8Pv0eZCWN5PneqZfBfbrO3r5uE/exec";
-
+  const GOOGLE_SCRIPT_URL = process.env.REACT_APP_GOOGLE_SCRIPT_URL;
   const PDF_URL = "https://drive.google.com/file/d/1B44A6eVs434zoKVr5ACAJFVFdgDDbEF0/preview";
 
   useEffect(() => {
