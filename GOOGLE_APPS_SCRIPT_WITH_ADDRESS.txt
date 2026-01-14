@@ -77,7 +77,7 @@ function doPost(e) {
     if (receiptNumber) {
       const lastRow = sheet.getLastRow();
       if (lastRow > 1) {
-        const receiptColumn = sheet.getRange(2, 8, lastRow - 1, 1).getValues(); // Column 8 now (was 7)
+        const receiptColumn = sheet.getRange(2, 7, lastRow - 1, 1).getValues(); // Column 7 (Receipt Number)
         const existingReceipts = receiptColumn.map(row => row[0].toString().trim());
 
         if (existingReceipts.includes(receiptNumber.trim())) {
@@ -136,13 +136,13 @@ function doPost(e) {
       "'" + (data.nric || ''),
       "'" + (data.mobileNumber || ''),
       data.email || '',
-      data.address || '',  // ← ADDED ADDRESS
       data.receiptNumber || '',
       data.receiptDate || '',
       imageUrl,
       data.qnaAnswer || '',
       'Submitted',
-      false
+      false,
+      data.address || ''  // ← MOVED ADDRESS TO END
     ]);
 
     Logger.log('POST: Data appended successfully');
@@ -188,11 +188,11 @@ function getWinners() {
     const winners = [];
 
     for (let i = 0; i < data.length; i++) {
-      if (data[i][12] === true || data[i][12] === 'TRUE' || data[i][12] === 'true') { // Column 13 (index 12)
+      if (data[i][11] === true || data[i][11] === 'TRUE' || data[i][11] === 'true') { // Column 12 Winner (index 11)
         winners.push({
           name: data[i][2],
           nric: data[i][3],
-          receiptNumber: data[i][7] // Column 8 (index 7)
+          receiptNumber: data[i][6] // Column 7 Receipt Number (index 6)
         });
       }
     }
@@ -241,8 +241,8 @@ function getSubmissionsByMobileNumber(mobileNumber) {
           mobileNumber: data[i][4],
           name: data[i][2],
           dateOfSubmission: data[i][0],
-          receiptNumber: data[i][7], // Column 8 (index 7)
-          submissionStatus: data[i][11] // Column 12 (index 11)
+          receiptNumber: data[i][6], // Column 7 Receipt Number (index 6)
+          submissionStatus: data[i][10] // Column 11 Submission Status (index 10)
         });
       }
     }
@@ -281,7 +281,7 @@ function checkReceiptNumber(receiptNumber) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    const receiptColumn = sheet.getRange(2, 8, lastRow - 1, 1).getValues(); // Column 8 (was 7)
+    const receiptColumn = sheet.getRange(2, 7, lastRow - 1, 1).getValues(); // Column 7 (Receipt Number)
     const existingReceipts = receiptColumn.map(row => row[0].toString().trim());
 
     const exists = existingReceipts.includes(receiptNumber.trim());
