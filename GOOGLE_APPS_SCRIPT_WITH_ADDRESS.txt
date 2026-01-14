@@ -61,13 +61,13 @@ function doPost(e) {
         'NRIC',
         'Mobile Number',
         'Email',
-        'Address',
         'Receipt Number',
         'Receipt Date',
         'Image Link',
         'QnA Answer',
         'Submission Status',
-        'Winner'
+        'Winner',
+        'Address',
       ]);
       Logger.log('POST: Added headers');
     }
