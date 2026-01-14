@@ -10,7 +10,7 @@ const Home = ({ onNavigateToForm }) => {
 
   // Replace this with your Google Apps Script Web App URL
   const GOOGLE_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycby6jE0I_3230OxSnx5BtMezrWR3Sz1kPGYYvuJzhGLyQRJL9q90etN-pl9wkWwgsasP/exec";
+    "https://script.google.com/macros/s/AKfycbxmeIPw-MHd09_mUtq97wVm0e9kAtXqCJaB121W4bSmnyiPPPk6ZjDuKAJNPMWzmAt9/exec";
 
   const PDF_URL = "https://drive.google.com/file/d/1B44A6eVs434zoKVr5ACAJFVFdgDDbEF0/preview";
 
