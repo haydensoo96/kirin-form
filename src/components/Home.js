@@ -10,30 +10,30 @@ const Home = ({ onNavigateToForm }) => {
 
   // Replace this with your Google Apps Script Web App URL
   const GOOGLE_SCRIPT_URL = process.env.REACT_APP_GOOGLE_SCRIPT_URL;
-  const PDF_URL = "https://drive.google.com/file/d/1B44A6eVs434zoKVr5ACAJFVFdgDDbEF0/preview";
-
+  const PDF_URL = process.env.REACT_APP_PDF_URL;
+  
   useEffect(() => {
-    fetchWinners();
-  }, []);
+    const fetchWinners = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getWinners`);
+        const data = await response.json();
 
-  const fetchWinners = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getWinners`);
-      const data = await response.json();
-
-      if (data.result === "success") {
-        setWinners(data.data);
-      } else {
-        toast.error("Failed to fetch winners");
+        if (data.result === "success") {
+          setWinners(data.data);
+        } else {
+          toast.error("Failed to fetch winners");
+        }
+      } catch (error) {
+        console.error("Error fetching winners:", error);
+        toast.error("Error fetching winners");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching winners:", error);
-      toast.error("Error fetching winners");
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    fetchWinners();
+  }, [GOOGLE_SCRIPT_URL]);
 
   return (
     <div
