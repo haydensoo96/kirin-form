@@ -61,7 +61,7 @@ const Home = ({ onNavigateToForm }) => {
       {/* Hero Section */}
       <div className="relative w-full">
         <img
-          src="/HomepagePoster.png"
+          src="/HomepagePosterV2.png"
           alt="Kirin Ichiban Promotion"
           className="w-full h-auto"
           style={{ display: "block" }}
