@@ -220,34 +220,12 @@ const FormComponent = () => {
       return;
     }
 
-    // Validate receipt date format yyyy-mm-dd (from date input)
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(formData.receiptDate)) {
-      toast.error("Please select a valid receipt date");
-      return;
-    }
-
-    // Validate receipt date is a valid date
+    // Convert receipt date to dd/mm/yyyy format for backend
     const dateParts = formData.receiptDate.split('-');
-    const year = parseInt(dateParts[0], 10);
-    const month = parseInt(dateParts[1], 10);
-    const day = parseInt(dateParts[2], 10);
-
-    // Check year range
-    if (year < 2024 || year > 2026) {
-      toast.error("Receipt date must be within the promotion period");
-      return;
-    }
-
-    const dateObj = new Date(year, month - 1, day);
-
-    if (dateObj.getDate() !== day || dateObj.getMonth() !== month - 1 || dateObj.getFullYear() !== year) {
-      toast.error("Please enter a valid receipt date");
-      return;
-    }
-
-    // Convert to dd/mm/yyyy format for backend
-    const formattedDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+    const year = dateParts[0];
+    const month = dateParts[1];
+    const day = dateParts[2];
+    const formattedDate = `${day}/${month}/${year}`;
 
     setLoading(true);
     try {
@@ -697,8 +675,6 @@ const FormComponent = () => {
                     value={formData.receiptDate}
                     onChange={handleReceiptDateChange}
                     required
-                    min="2024-12-26"
-                    max="2026-02-01"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black"
                     style={{ colorScheme: "light" }}
                   />
@@ -1041,7 +1017,7 @@ const FormComponent = () => {
                 </h3>
                 <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   The Kirin Ichiban 2026 Chinese New Year promotion runs from
-                  26th December 2025 – 1st February 2026.{" "}
+                  26th December 2025 – 8th February 2026.{" "}
                 </p>
               </div>
               <div>
