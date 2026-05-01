@@ -1,0 +1,306 @@
+// ==================================================
+// SIMPLIFIED VERSION - No Rate Limiting, No reCAPTCHA
+// ==================================================
+// Fixed: Now includes Address column
+// Updated: Added Brand Answer column
+// ==================================================
+
+// ==================================================
+// GET Request Handler
+// ==================================================
+
+function doGet(e) {
+  try {
+    const action = e.parameter.action;
+
+    if (action === 'getWinners') {
+      return getWinners();
+    } else if (action === 'getSubmissionsByMobileNumber') {
+      return getSubmissionsByMobileNumber(e.parameter.mobileNumber);
+    } else if (action === 'checkReceiptNumber') {
+      return checkReceiptNumber(e.parameter.receiptNumber);
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        'result': 'error',
+        'message': 'Invalid action'
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        'result': 'error',
+        'message': error.toString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ==================================================
+// POST Request Handler
+// ==================================================
+
+function doPost(e) {
+  try {
+    Logger.log('POST: Received request');
+
+    // Parse the incoming JSON data
+    const data = JSON.parse(e.postData.contents);
+    Logger.log('POST: Parsed data successfully');
+
+    // Get the active spreadsheet
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    Logger.log('POST: Got sheet: ' + sheet.getName());
+
+    // If this is the first submission, add headers
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow([
+        'Timestamp',
+        'Segment',
+        'Full Name',
+        'NRIC',
+        'Mobile Number',
+        'Email',
+        'Receipt Number',
+        'Receipt Date',
+        'Image Link',
+        'Brand Answer',
+        'QnA Answer',
+        'Submission Status',
+        'Winner',
+        'Address',
+      ]);
+      Logger.log('POST: Added headers');
+    }
+
+    // Check for duplicate receipt number
+    const receiptNumber = data.receiptNumber || '';
+    if (receiptNumber) {
+      const lastRow = sheet.getLastRow();
+      if (lastRow > 1) {
+        const receiptColumn = sheet.getRange(2, 7, lastRow - 1, 1).getValues(); // Column 7 (Receipt Number)
+        const existingReceipts = receiptColumn.map(row => row[0].toString().trim());
+
+        if (existingReceipts.includes(receiptNumber.trim())) {
+          Logger.log('POST: Duplicate receipt number');
+          return ContentService
+            .createTextOutput(JSON.stringify({
+              'result': 'error',
+              'message': 'This receipt number has already been submitted. One receipt can only be submitted once.'
+            }))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+    }
+
+    Logger.log('POST: Starting image upload');
+
+    // Handle image upload
+    let imageUrl = '';
+    if (data.image && data.imageName) {
+      try {
+        const base64Data = data.image.split(',')[1];
+        const mimeType = data.image.split(';')[0].split(':')[1];
+
+        const blob = Utilities.newBlob(
+          Utilities.base64Decode(base64Data),
+          mimeType,
+          data.imageName
+        );
+
+        const folders = DriveApp.getFoldersByName('Form Submissions Images');
+        let folder;
+        if (folders.hasNext()) {
+          folder = folders.next();
+        } else {
+          folder = DriveApp.createFolder('Form Submissions Images');
+        }
+
+        const file = folder.createFile(blob);
+        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        imageUrl = file.getUrl();
+
+        Logger.log('POST: Image uploaded: ' + imageUrl);
+      } catch (imageError) {
+        Logger.log('POST: Image upload error: ' + imageError.toString());
+        imageUrl = 'Error uploading image';
+      }
+    }
+
+    Logger.log('POST: Appending data to sheet');
+
+    // Append the data to the sheet
+    sheet.appendRow([
+      data.timestamp || new Date().toISOString(),
+      data.segment || '',
+      data.fullName || '',
+      "'" + (data.nric || ''),
+      "'" + (data.mobileNumber || ''),
+      data.email || '',
+      data.receiptNumber || '',
+      data.receiptDate || '',
+      imageUrl,
+      data.brandAnswer || '',  // col 10
+      data.qnaAnswer || '',    // col 11
+      'Submitted',
+      false,
+      data.address || ''
+    ]);
+
+    Logger.log('POST: Data appended successfully');
+
+    // Return success response
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        'result': 'success',
+        'message': 'Data submitted successfully'
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    Logger.log('POST: Error: ' + error.toString());
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        'result': 'error',
+        'message': error.toString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ==================================================
+// Get Winners
+// ==================================================
+
+function getWinners() {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const lastRow = sheet.getLastRow();
+
+    if (lastRow <= 1) {
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          'result': 'success',
+          'data': []
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const data = sheet.getRange(2, 1, lastRow - 1, 14).getValues(); // 14 columns
+    const winners = [];
+
+    for (let i = 0; i < data.length; i++) {
+      if (data[i][12] === true || data[i][12] === 'TRUE' || data[i][12] === 'true') { // Winner: index 12
+        winners.push({
+          name: data[i][2],
+          nric: data[i][3],
+          receiptNumber: data[i][6]
+        });
+      }
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        'result': 'success',
+        'data': winners
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        'result': 'error',
+        'message': error.toString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ==================================================
+// Get Submissions by Mobile Number
+// ==================================================
+
+function getSubmissionsByMobileNumber(mobileNumber) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const lastRow = sheet.getLastRow();
+
+    if (lastRow <= 1 || !mobileNumber) {
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          'result': 'success',
+          'data': []
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const data = sheet.getRange(2, 1, lastRow - 1, 14).getValues(); // 14 columns
+    const submissions = [];
+
+    // Filter by Mobile Number (column 5, index 4)
+    for (let i = 0; i < data.length; i++) {
+      if (data[i][4].toString().trim() === mobileNumber.trim()) {
+        submissions.push({
+          mobileNumber: data[i][4],
+          name: data[i][2],
+          dateOfSubmission: data[i][0],
+          receiptNumber: data[i][6],
+          submissionStatus: data[i][11] // Submission Status: index 11
+        });
+      }
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        'result': 'success',
+        'data': submissions
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        'result': 'error',
+        'message': error.toString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ==================================================
+// Check Receipt Number
+// ==================================================
+
+function checkReceiptNumber(receiptNumber) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const lastRow = sheet.getLastRow();
+
+    if (lastRow <= 1 || !receiptNumber) {
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          'result': 'success',
+          'exists': false
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const receiptColumn = sheet.getRange(2, 7, lastRow - 1, 1).getValues(); // Column 7 (Receipt Number)
+    const existingReceipts = receiptColumn.map(row => row[0].toString().trim());
+
+    const exists = existingReceipts.includes(receiptNumber.trim());
+
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        'result': 'success',
+        'exists': exists
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        'result': 'error',
+        'message': error.toString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}

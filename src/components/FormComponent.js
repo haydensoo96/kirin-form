@@ -18,6 +18,7 @@ const FormComponent = () => {
     postalCode: "",
     receiptNumber: "",
     receiptDate: "",
+    brandAnswer: "",
     qnaAnswer: "",
     termsAccepted: false,
     ageConfirmed: false,
@@ -180,6 +181,7 @@ const FormComponent = () => {
       !formData.postalCode ||
       !formData.receiptNumber ||
       !formData.receiptDate ||
+      !formData.brandAnswer ||
       !formData.qnaAnswer
     ) {
       toast.error("Please fill in all required fields");
@@ -266,6 +268,7 @@ const FormComponent = () => {
         receiptDate: formattedDate,
         image: imageBase64,
         imageName: imageFile.name,
+        brandAnswer: formData.brandAnswer,
         qnaAnswer: formData.qnaAnswer,
         timestamp: new Date().toISOString(),
         recaptchaToken: recaptchaToken,
@@ -297,6 +300,7 @@ const FormComponent = () => {
         postalCode: "",
         receiptNumber: "",
         receiptDate: "",
+        brandAnswer: "",
         qnaAnswer: "",
         termsAccepted: false,
         ageConfirmed: false,
@@ -756,28 +760,53 @@ const FormComponent = () => {
                   className="text-sm sm:text-base lg:text-xl font-bold mb-4"
                   style={{ color: "#000" }}
                 >
-                  Where does Kirin Ichiban originally come from?
+                  When you think of premium beer, which brand comes to mind
+                  first?<span className="text-red-600">*</span>
                 </h3>
-                <div className="grid grid-cols-2 gap-4 lg:flex lg:justify-between lg:gap-0">
-                  {["JAPAN", "SOUTH KOREA", "CHINA", "SINGAPORE"].map(
-                    (country) => (
-                      <label
-                        key={country}
-                        className="flex items-center cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          name="qnaAnswer"
-                          value={country}
-                          checked={formData.qnaAnswer === country}
-                          onChange={handleInputChange}
-                          className="h-5 w-5 flex-shrink-0"
-                          style={{ accentColor: "#E5B746" }}
-                        />
-                        <span className="ml-3 text-xs sm:text-sm lg:text-base font-semibold whitespace-nowrap">{country}</span>
-                      </label>
-                    )
-                  )}
+                <input
+                  type="text"
+                  name="brandAnswer"
+                  value={formData.brandAnswer}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="Your answer"
+                  className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
+                />
+              </div>
+
+              <div>
+                <h3
+                  className="text-sm sm:text-base lg:text-xl font-bold mb-4"
+                  style={{ color: "#000" }}
+                >
+                  How familiar are you with Kirin Ichiban?
+                  <span className="text-red-600">*</span>
+                </h3>
+                <div className="flex flex-col space-y-3">
+                  {[
+                    "Very familiar",
+                    "Somewhat familiar",
+                    "Heard of them, but don't know much",
+                    "Have not heard of them",
+                  ].map((option) => (
+                    <label
+                      key={option}
+                      className="flex items-center cursor-pointer"
+                    >
+                      <input
+                        type="radio"
+                        name="qnaAnswer"
+                        value={option}
+                        checked={formData.qnaAnswer === option}
+                        onChange={handleInputChange}
+                        className="h-5 w-5 flex-shrink-0"
+                        style={{ accentColor: "#E5B746" }}
+                      />
+                      <span className="ml-3 text-xs sm:text-sm lg:text-base font-semibold">
+                        {option}
+                      </span>
+                    </label>
+                  ))}
                 </div>
               </div>
 
@@ -999,13 +1028,13 @@ const FormComponent = () => {
                   className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
-                  Who can participate in this Kirin Ichiban 2026 Chinese New
-                  Year promotion?{" "}
+                  Who can participate in this Ichiban Moment 2D1N Glamping
+                  Getaway promotion?
                 </h3>
                 <p className="text-xs sm:text-sm lg:text-base text-gray-700">
-                  This promotion is open to all non-Muslim residents of West
-                  Malaysia aged 21 years and above. All entries must comply with
-                  the official Terms & Conditions.{" "}
+                  This promotion is open to all non-Muslim residents of KL &
+                  Selangor aged 21 years and above. All entries must comply with
+                  the official Terms & Conditions.
                 </p>
               </div>
               <div>
@@ -1013,11 +1042,11 @@ const FormComponent = () => {
                   className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
-                  When is the contest period?{" "}
+                  When is the contest period?
                 </h3>
                 <p className="text-xs sm:text-sm lg:text-base text-gray-700">
-                  The Kirin Ichiban 2026 Chinese New Year promotion runs from
-                  26th December 2025 – 8th February 2026.{" "}
+                  The Ichiban Moment 2D1N Glamping Getaway promotion runs from
+                  1st May 2026 – 19th July 2026.
                 </p>
               </div>
               <div>
@@ -1025,35 +1054,54 @@ const FormComponent = () => {
                   className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
-                  How can I participate in this promotion?{" "}
+                  How can I participate in this promotion?
                 </h3>
                 <div className="text-xs sm:text-sm lg:text-base text-gray-700 space-y-3">
                   <div>
                     <p className="font-semibold mb-2">
                       Mechanics / Minimum Spend:
                     </p>
-                    <ul className="list-none space-y-1 ml-4">
+                    <ul className="list-none space-y-2 ml-4">
                       <li>
-                        i. Purchase a total minimum of RM88 of any Kirin Ichiban
-                        products in a single receipt.
+                        <span className="font-semibold">
+                          i. MOFT (Retail Outlets / Supermarkets / Convenience
+                          Stores)
+                        </span>
+                        <br />
+                        Purchase a minimum of one (1) 4-can pack or one (1)
+                        4-pints pack containing any Kirin Ichiban product(s) in
+                        a single receipt from participating outlets.
+                      </li>
+                      <li className="mt-2">
+                        <span className="font-semibold">
+                          MONT (Bars / Restaurants / Food & Beverage Outlets)
+                        </span>
+                        <br />
+                        Purchase a minimum of one (1) set of Kirin Ichiban
+                        Draught Beer or one (1) set of Kirin Ichiban Pint Beer
+                        in a single receipt from participating outlets.
                       </li>
                       <li>
                         ii. Scan QR code to submit the receipt via Contest
                         Website.
                       </li>
                       <li>
-                        iii. Stand to win Kirin Ichiban Limited-Edition Mah Jong
-                        Set worth RM388 (100 winners).
+                        iii. Stand to win a 2D1N Glamping Getaway at Serene by
+                        Play (11 winners).
                       </li>
                     </ul>
                   </div>
                   <div>
                     <p className="font-semibold mb-2">Eligible Channels:</p>
                     <ul className="list-none space-y-1 ml-4">
-                      <li>i. Hypermarket / Supermarkets / MOFT</li>
-                      <li>ii. Convenience Stores (CVS)</li>
-                      <li>iii. Restaurant / Bar</li>
-                      <li>iv. E-commerce platforms (Shopee / Lazada)</li>
+                      <li>
+                        i. MOFT (Retail Outlets / Supermarkets / Convenience
+                        Stores)
+                      </li>
+                      <li>
+                        ii. MONT (Bars / Restaurants / Food & Beverage Outlets)
+                      </li>
+                      <li>iii. E-commerce platforms (Shopee / Lazada)</li>
                     </ul>
                   </div>
                 </div>
@@ -1063,7 +1111,7 @@ const FormComponent = () => {
                   className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
-                  How do I submit my receipt?{" "}
+                  How do I submit my receipt?
                 </h3>
                 <div className="text-xs sm:text-sm lg:text-base text-gray-700">
                   <ol className="list-none space-y-2">
@@ -1092,7 +1140,7 @@ const FormComponent = () => {
                 </h3>
                 <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   No. Each entry must be submitted using one single receipt
-                  only.{" "}
+                  only.
                 </p>
               </div>
               <div>
@@ -1106,7 +1154,7 @@ const FormComponent = () => {
                   Receipts must clearly show the store name, date, purchased
                   Kirin Ichiban products, price, and total amount. Handwritten
                   receipts, altered receipts, or unclear images will not be
-                  accepted.{" "}
+                  accepted.
                 </p>
               </div>
               <div>
@@ -1147,7 +1195,7 @@ const FormComponent = () => {
                   Winners will be announced on our official social media
                   channels: Instagram @kirinichibanmy and Facebook Kirin Ichiban
                   Malaysia. Participants may also check the winners list at
-                  https://kirin-promotion.tongwohgroup.com/.{" "}
+                  https://kirin-promotion.tongwohgroup.com/.
                 </p>
               </div>
               <div>
@@ -1155,11 +1203,11 @@ const FormComponent = () => {
                   className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
-                  How will the prizes be delivered?
+                  How will the prizes be received?
                 </h3>
                 <p className="text-xs sm:text-sm lg:text-base text-gray-700">
-                  Winners will be contacted for delivery arrangements. Prizes
-                  will be delivered only to addresses within West Malaysia.{" "}
+                  Winners will be contacted directly to provide their details
+                  for arrangement and fulfilment.
                 </p>
               </div>
               <div>
@@ -1179,21 +1227,7 @@ const FormComponent = () => {
                   className="text-sm sm:text-base lg:text-xl font-bold mb-2"
                   style={{ color: "#000" }}
                 >
-                  Are there any taxes or additional fees associated with the
-                  prize?
-                </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700">
-                  No. The prize is not subject to additional taxes or fees.
-                  Winners will receive the prize exactly as described in the
-                  Terms & Conditions.
-                </p>
-              </div>
-              <div>
-                <h3
-                  className="text-sm sm:text-base lg:text-xl font-bold mb-2"
-                  style={{ color: "#000" }}
-                >
-                  Who can I contact if I have more questions?{" "}
+                  Who can I contact if I have more questions?
                 </h3>
                 <p className="text-xs sm:text-sm lg:text-base text-gray-700">
                   For further assistance, please email us at: enquiry@twe.my

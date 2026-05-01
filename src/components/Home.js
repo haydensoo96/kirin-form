@@ -11,7 +11,7 @@ const Home = ({ onNavigateToForm }) => {
   // Replace this with your Google Apps Script Web App URL
   const GOOGLE_SCRIPT_URL = process.env.REACT_APP_GOOGLE_SCRIPT_URL;
   const PDF_URL = process.env.REACT_APP_PDF_URL;
-  
+
   useEffect(() => {
     const fetchWinners = async () => {
       setLoading(true);
@@ -91,18 +91,29 @@ const Home = ({ onNavigateToForm }) => {
             fontWeight: 900,
           }}
         >
-          PROSPERITY BEGINS WITH <span className="whitespace-nowrap">KIRIN ICHIBAN</span>
+          2D1N ICHIBAN MOMENT GLAMPING ESCAPE
         </h2>
-        <p className="text-sm sm:text-base lg:text-lg mb-4 leading-tight" style={{ color: "#E5B746" }}>
-          Celebrate meaningful moments with a chance to win our 
-          Limited-Edition Kirin Ichiban Mah Jong Set.
+        <p
+          className="text-sm sm:text-base lg:text-lg mb-4 leading-tight"
+          style={{ color: "#E5B746" }}
+        >
+          Some Moments Only Happen Once. Kirin Ichiban Makes Them Count.
         </p>
-        <p className="text-xs sm:text-sm lg:text-base leading-relaxed" style={{ color: "#000" }}>
-          Step into the festive season with a celebration made for togetherness.
-          This Chinese New Year, let Kirin Ichiban be the taste that completes
-          your reunions, your celebrations, and the moments that matter most.
-          Stand to win our Limited-Edition Kirin Ichiban Mah Jong Sets — a
-          festive symbol of tradition and togetherness.
+        <p
+          className="text-xs sm:text-sm lg:text-base leading-relaxed"
+          style={{ color: "#000" }}
+        >
+          Your choice of beer defines the moment. It’s more than just another
+          round; it’s a reflection of the craftsmanship you value and the
+          company you keep. Brewed with our signature "First Press" process,
+          Kirin Ichiban offers a crisp, clean taste designed to elevate life’s
+          fleeting highlights. Whether it’s a long-awaited reunion or a quiet
+          milestone, these occasions deserve more than the ordinary. Trade the
+          city noise for the crackle of a campfire and the rustle of leaves.
+          This is a curated escape for those who appreciate the finer details.
+          Slow down, reconnect, and savor the premium Japanese lager that turns
+          a simple getaway into an unforgettable experience. Don’t just mark the
+          occasion. Make it count.
         </p>
       </div>
 
@@ -162,7 +173,10 @@ const Home = ({ onNavigateToForm }) => {
           </div>
         ) : winners.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-base sm:text-lg lg:text-xl font-medium" style={{ color: "#000" }}>
+            <p
+              className="text-base sm:text-lg lg:text-xl font-medium"
+              style={{ color: "#000" }}
+            >
               Winners will be released soon
             </p>
             <p className="text-xs sm:text-sm lg:text-base text-gray-600 mt-2">
