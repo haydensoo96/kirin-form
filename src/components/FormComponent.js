@@ -45,16 +45,16 @@ const FormComponent = () => {
     let input = e.target.value;
 
     // Remove all non-digits
-    let digits = input.replace(/\D/g, '');
+    let digits = input.replace(/\D/g, "");
 
     // If digits start with 60, keep them; otherwise prepend 60
-    if (digits.startsWith('60')) {
+    if (digits.startsWith("60")) {
       digits = digits.slice(2); // Remove the 60 prefix to get user's number
     }
 
     // Limit to 10 digits after +60 (total 12 digits)
     if (digits.length <= 10) {
-      setFormData((prev) => ({ ...prev, mobileNumber: '+60' + digits }));
+      setFormData((prev) => ({ ...prev, mobileNumber: "+60" + digits }));
     }
   };
 
@@ -62,16 +62,16 @@ const FormComponent = () => {
     let input = e.target.value;
 
     // Remove all non-digits
-    let digits = input.replace(/\D/g, '');
+    let digits = input.replace(/\D/g, "");
 
     // If digits start with 60, keep them; otherwise prepend 60
-    if (digits.startsWith('60')) {
+    if (digits.startsWith("60")) {
       digits = digits.slice(2); // Remove the 60 prefix to get user's number
     }
 
     // Limit to 10 digits after +60 (total 12 digits)
     if (digits.length <= 10) {
-      setTrackingMobileNumber('+60' + digits);
+      setTrackingMobileNumber("+60" + digits);
     }
   };
 
@@ -125,8 +125,8 @@ const FormComponent = () => {
       try {
         const response = await fetch(
           `${GOOGLE_SCRIPT_URL}?action=checkReceiptNumber&receiptNumber=${encodeURIComponent(
-            receiptNumber
-          )}`
+            receiptNumber,
+          )}`,
         );
         const data = await response.json();
         if (data.result === "success") {
@@ -136,7 +136,7 @@ const FormComponent = () => {
         // Error checking receipt number
       }
     },
-    [GOOGLE_SCRIPT_URL]
+    [GOOGLE_SCRIPT_URL],
   );
 
   useEffect(() => {
@@ -146,11 +146,10 @@ const FormComponent = () => {
     return () => clearTimeout(timeoutId);
   }, [formData.receiptNumber, checkReceiptNumberExists]);
 
-
   // Load reCAPTCHA script dynamically
   useEffect(() => {
     if (RECAPTCHA_SITE_KEY && !window.grecaptcha) {
-      const script = document.createElement('script');
+      const script = document.createElement("script");
       script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
       script.async = true;
       script.defer = true;
@@ -223,7 +222,7 @@ const FormComponent = () => {
     }
 
     // Convert receipt date to dd/mm/yyyy format for backend
-    const dateParts = formData.receiptDate.split('-');
+    const dateParts = formData.receiptDate.split("-");
     const year = dateParts[0];
     const month = dateParts[1];
     const day = dateParts[2];
@@ -261,7 +260,7 @@ const FormComponent = () => {
         segment: formData.segment,
         fullName: formData.fullName,
         nric: formData.nric,
-        mobileNumber: formData.mobileNumber.replace('+', ''),
+        mobileNumber: formData.mobileNumber.replace("+", ""),
         email: formData.email,
         address: combinedAddress,
         receiptNumber: formData.receiptNumber,
@@ -333,10 +332,10 @@ const FormComponent = () => {
     setLoadingSubmissions(true);
     try {
       // Remove + sign for tracking to match stored format
-      const cleanedNumber = mobileNumber.replace('+', '');
+      const cleanedNumber = mobileNumber.replace("+", "");
       const queryParams = new URLSearchParams({
-        action: 'getSubmissionsByMobileNumber',
-        mobileNumber: cleanedNumber
+        action: "getSubmissionsByMobileNumber",
+        mobileNumber: cleanedNumber,
       });
 
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?${queryParams}`);
@@ -439,7 +438,7 @@ const FormComponent = () => {
                 color: "#F68B1F",
               }}
             >
-              SUBMIT
+              SUBMIT RECEIPT
             </h1>
 
             <form onSubmit={handleSubmit} className="space-y-8">
@@ -695,10 +694,10 @@ const FormComponent = () => {
                 </label>
                 <label
                   htmlFor="image-upload"
-                  className="w-full py-4 sm:py-6 flex items-center justify-center font-bold text-base sm:text-xl lg:text-2xl text-white cursor-pointer rounded-lg shadow-lg transition"
+                  className="w-full py-4 sm:py-6 flex items-center justify-center font-bold text-base sm:text-xl lg:text-2xl text-black cursor-pointer rounded-lg shadow-lg transition"
                   style={{
                     background:
-                      "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
+                      "linear-gradient(180deg, #FFF33b 0%, #FAA31B 100%)",
                   }}
                 >
                   UPLOAD IMAGE
@@ -901,11 +900,10 @@ const FormComponent = () => {
                 <button
                   type="submit"
                   disabled={loading || receiptExists}
-                  className="px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-white rounded-full shadow-lg transition disabled:opacity-50"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
-                  }}
+                  className="px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-black rounded-full shadow-lg transition disabled:opacity-50"
+                 style={{
+              background: "linear-gradient(180deg, #FFF33b 0%, #FAA31B 100%)",
+            }}
                 >
                   {loading ? "SUBMITTING..." : "SUBMIT"}
                 </button>
@@ -921,37 +919,36 @@ const FormComponent = () => {
               className="text-lg sm:text-2xl lg:text-3xl font-bold text-center mb-8"
               style={{
                 fontFamily: "'Merriweather', serif",
-                color: "#F68B1F"
+                color: "#F68B1F",
               }}
             >
               ENTER YOUR MOBILE NUMBER AND TRACK YOUR ENTRY STATUS
             </h1>
             <div className="max-w-2xl mx-auto">
-                <label
-                  className="block text-base font-bold mb-4"
-                  style={{ color: "#000" }}
-                >
-                  MOBILE NUMBER<span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="tel"
-                  value={trackingMobileNumber}
-                  onChange={handleTrackingPhoneChange}
-                  placeholder="Eg. +60123456789"
-                  className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none text-gray-400"
-                  style={{ fontStyle: "italic" }}
-                />
+              <label
+                className="block text-base font-bold mb-4"
+                style={{ color: "#000" }}
+              >
+                MOBILE NUMBER<span className="text-red-600">*</span>
+              </label>
+              <input
+                type="tel"
+                value={trackingMobileNumber}
+                onChange={handleTrackingPhoneChange}
+                placeholder="Eg. +60123456789"
+                className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none text-gray-400"
+                style={{ fontStyle: "italic" }}
+              />
               <div className="flex justify-center mt-8">
                 <button
                   onClick={() =>
                     fetchSubmissionsByMobileNumber(trackingMobileNumber)
                   }
                   disabled={loadingSubmissions}
-                  className="px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-white rounded-full shadow-lg disabled:opacity-50"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
-                  }}
+                  className="px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-black rounded-full shadow-lg disabled:opacity-50"
+                   style={{
+              background: "linear-gradient(180deg, #FFF33b 0%, #FAA31B 100%)",
+            }}
                 >
                   {loadingSubmissions ? "LOADING..." : "TRACK MY ENTRY"}
                 </button>
@@ -988,10 +985,12 @@ const FormComponent = () => {
                           <td className="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
                             {sub.mobileNumber}
                           </td>
-                          <td className="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">{sub.name}</td>
+                          <td className="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
+                            {sub.name}
+                          </td>
                           <td className="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
                             {new Date(
-                              sub.dateOfSubmission
+                              sub.dateOfSubmission,
                             ).toLocaleDateString()}
                           </td>
                           <td className="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
@@ -1017,7 +1016,7 @@ const FormComponent = () => {
               className="text-xl sm:text-3xl lg:text-4xl font-bold text-center mb-12"
               style={{
                 fontFamily: "'Merriweather', serif",
-                color: "#F68B1F"
+                color: "#F68B1F",
               }}
             >
               FREQUENTLY ASKED QUESTIONS
@@ -1064,30 +1063,43 @@ const FormComponent = () => {
                     <ul className="list-none space-y-2 ml-4">
                       <li>
                         <span className="font-semibold">
-                          i. MOFT (Retail Outlets / Supermarkets / Convenience
+                          MOFT (Retail Outlets / Supermarkets / Convenience
                           Stores)
                         </span>
                         <br />
-                        Purchase a minimum of one (1) 4-can pack or one (1)
+                        i. Purchase a minimum of one (1) 4-can pack or one (1)
                         4-pints pack containing any Kirin Ichiban product(s) in
-                        a single receipt from participating outlets.
+                        a single receipt from participating outlets. <br />
                       </li>
+                      <li className="mt-3">
+                        <span>
+                          ii. Scan QR code to submit the receipt via Contest
+                          Website.
+                        </span>
+                      </li>
+                      <li className="mt-2">
+                        iii. Stand to win a 2D1N Glamping Getaway at Serene by
+                        Play.
+                      </li>
+                      <br />
                       <li className="mt-2">
                         <span className="font-semibold">
                           MONT (Bars / Restaurants / Food & Beverage Outlets)
                         </span>
                         <br />
-                        Purchase a minimum of one (1) set of Kirin Ichiban
+                        i. Purchase a minimum of one (1) set of Kirin Ichiban
                         Draught Beer or one (1) set of Kirin Ichiban Pint Beer
                         in a single receipt from participating outlets.
                       </li>
-                      <li>
-                        ii. Scan QR code to submit the receipt via Contest
-                        Website.
+                      <li className="mt-3">
+                        <span>
+                          ii. Scan QR code to submit the receipt via Contest
+                          Website.
+                        </span>
                       </li>
-                      <li>
+                      <li className="mt-2">
                         iii. Stand to win a 2D1N Glamping Getaway at Serene by
-                        Play (11 winners).
+                        Play.
                       </li>
                     </ul>
                   </div>
@@ -1237,8 +1249,12 @@ const FormComponent = () => {
 
             {/* Notice Section */}
             <div className="mt-12 text-center">
-              <p className="text-xs sm:text-sm lg:text-base font-bold" style={{ color: "#000" }}>
-                Please do not forward this promotion to individuals below the legal drinking age
+              <p
+                className="text-xs sm:text-sm lg:text-base font-bold"
+                style={{ color: "#000" }}
+              >
+                Please do not forward this promotion to individuals below the
+                legal drinking age
               </p>
             </div>
           </div>

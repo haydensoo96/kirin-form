@@ -74,9 +74,9 @@ const Home = ({ onNavigateToForm }) => {
         <div className="mb-8">
           <button
             onClick={onNavigateToForm}
-            className="px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-white rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+            className="px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-black rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
             style={{
-              background: "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
+              background: "linear-gradient(180deg, #FFF33b 0%, #FAA31B 100%)",
             }}
           >
             RECEIPT SUBMISSION
@@ -105,20 +105,20 @@ const Home = ({ onNavigateToForm }) => {
         >
           Your choice of beer defines the moment. It’s more than just another
           round; it’s a reflection of the craftsmanship you value and the
-          company you keep. Brewed with our signature "First Press" process,
+          company you keep. <br /> <br /> Brewed with our signature "First Press" process,
           Kirin Ichiban offers a crisp, clean taste designed to elevate life’s
           fleeting highlights. Whether it’s a long-awaited reunion or a quiet
-          milestone, these occasions deserve more than the ordinary. Trade the
+          milestone, these occasions deserve more than the ordinary. <br /><br />  Trade the
           city noise for the crackle of a campfire and the rustle of leaves.
           This is a curated escape for those who appreciate the finer details.
           Slow down, reconnect, and savor the premium Japanese lager that turns
-          a simple getaway into an unforgettable experience. Don’t just mark the
+          a simple getaway into an unforgettable experience. <br />  <br /> <br /> <br />  Don’t just mark the
           occasion. Make it count.
         </p>
       </div>
 
       {/* Video Section */}
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      {/* <div className="max-w-5xl mx-auto px-4 py-8">
         <div
           className="relative overflow-hidden"
           style={{
@@ -133,7 +133,7 @@ const Home = ({ onNavigateToForm }) => {
             title="Kirin Ichiban Promotion Video"
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Winner List Section */}
       <div className="max-w-6xl mx-auto px-4 py-16">
@@ -191,15 +191,16 @@ const Home = ({ onNavigateToForm }) => {
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
             }}
           >
+          
             {/* Header */}
             <div
               style={{
-                background: "linear-gradient(135deg, #9B3D3D 0%, #C85A54 100%)",
+                 background: "linear-gradient(90deg, #FFF33b 0%, #FAA31B 100%)",
                 padding: "20px 16px",
                 textAlign: "center",
               }}
             >
-              <h2 className="text-base sm:text-xl lg:text-2xl font-bold text-white">
+              <h2 className="text-base sm:text-xl lg:text-2xl font-bold text-black">
                 WINNER LIST
               </h2>
             </div>
