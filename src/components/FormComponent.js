@@ -11,11 +11,11 @@ const FormComponent = () => {
     nric: "",
     mobileNumber: "+60",
     email: "",
-    address1: "",
-    address2: "",
-    city: "",
-    state: "",
-    postalCode: "",
+    // address1: "",
+    // address2: "",
+    // city: "",
+    // state: "",
+    // postalCode: "",
     receiptNumber: "",
     receiptDate: "",
     brandAnswer: "",
@@ -165,6 +165,21 @@ const FormComponent = () => {
     }
   }, [RECAPTCHA_SITE_KEY]);
 
+  const isFormValid =
+    !!formData.segment &&
+    !!formData.fullName &&
+    !!formData.nric &&
+    formData.mobileNumber !== "+60" &&
+    !!formData.email &&
+    !!formData.receiptNumber &&
+    !!formData.receiptDate &&
+    !!imageFile &&
+    !!formData.brandAnswer &&
+    !!formData.qnaAnswer &&
+    formData.ageConfirmed &&
+    formData.termsAccepted &&
+    !receiptExists;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -174,10 +189,10 @@ const FormComponent = () => {
       !formData.nric ||
       formData.mobileNumber === "+60" ||
       !formData.email ||
-      !formData.address1 ||
-      !formData.city ||
-      !formData.state ||
-      !formData.postalCode ||
+      // !formData.address1 ||
+      // !formData.city ||
+      // !formData.state ||
+      // !formData.postalCode ||
       !formData.receiptNumber ||
       !formData.receiptDate ||
       !formData.brandAnswer ||
@@ -245,16 +260,15 @@ const FormComponent = () => {
       }
 
       const imageBase64 = await convertImageToBase64(imageFile);
-      // Combine address fields
-      const combinedAddress = [
-        formData.address1,
-        formData.address2,
-        formData.city,
-        formData.state,
-        formData.postalCode,
-      ]
-        .filter((field) => field.trim() !== "")
-        .join(", ");
+      // const combinedAddress = [
+      //   formData.address1,
+      //   formData.address2,
+      //   formData.city,
+      //   formData.state,
+      //   formData.postalCode,
+      // ]
+      //   .filter((field) => field.trim() !== "")
+      //   .join(", ");
 
       const submissionData = {
         segment: formData.segment,
@@ -262,7 +276,7 @@ const FormComponent = () => {
         nric: formData.nric,
         mobileNumber: formData.mobileNumber.replace("+", ""),
         email: formData.email,
-        address: combinedAddress,
+        // address: combinedAddress,
         receiptNumber: formData.receiptNumber,
         receiptDate: formattedDate,
         image: imageBase64,
@@ -292,11 +306,11 @@ const FormComponent = () => {
         nric: "",
         mobileNumber: "+60",
         email: "",
-        address1: "",
-        address2: "",
-        city: "",
-        state: "",
-        postalCode: "",
+        // address1: "",
+        // address2: "",
+        // city: "",
+        // state: "",
+        // postalCode: "",
         receiptNumber: "",
         receiptDate: "",
         brandAnswer: "",
@@ -545,9 +559,9 @@ const FormComponent = () => {
               </div>
 
               {/* Address Fields */}
-              <div className="space-y-8">
+              {/* <div className="space-y-8"> */}
                 {/* Address Line 1 */}
-                <div>
+                {/* <div>
                   <label
                     className="block text-sm sm:text-base font-bold mb-2"
                     style={{ color: "#000" }}
@@ -563,10 +577,10 @@ const FormComponent = () => {
                     placeholder="Enter your address"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
                   />
-                </div>
+                </div> */}
 
                 {/* Address Line 2 */}
-                <div>
+                {/* <div>
                   <label
                     className="block text-sm sm:text-base font-bold mb-2"
                     style={{ color: "#000" }}
@@ -581,10 +595,10 @@ const FormComponent = () => {
                     placeholder="Apartment, suite, etc. (optional)"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
                   />
-                </div>
+                </div> */}
 
                 {/* City and State */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
                     <label
                       className="block text-sm sm:text-base font-bold mb-2"
@@ -619,10 +633,10 @@ const FormComponent = () => {
                       className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
                     />
                   </div>
-                </div>
+                </div> */}
 
                 {/* Postal Code */}
-                <div>
+                {/* <div>
                   <label
                     className="block text-sm sm:text-base font-bold mb-2"
                     style={{ color: "#000" }}
@@ -638,8 +652,8 @@ const FormComponent = () => {
                     placeholder="Enter your postal/zip code"
                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-black focus:outline-none focus:border-b-2 focus:border-black text-gray-400"
                   />
-                </div>
-              </div>
+                </div> */}
+              {/* </div> */}
 
               {/* Receipt Number and Date */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -899,7 +913,7 @@ const FormComponent = () => {
               <div className="flex justify-center pt-8">
                 <button
                   type="submit"
-                  disabled={loading || receiptExists}
+                  disabled={loading || !isFormValid}
                   className="px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-black rounded-full shadow-lg transition disabled:opacity-50"
                  style={{
               background: "linear-gradient(180deg, #FFF33b 0%, #FAA31B 100%)",
