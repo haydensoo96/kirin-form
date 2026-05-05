@@ -117,6 +117,21 @@ const Home = ({ onNavigateToForm }) => {
         </p>
       </div>
 
+       <div className="mb-8">
+          <a
+            href="https://sites.google.com/view/playwithserene/home"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-8 sm:px-12 py-3 sm:py-4 font-bold text-base sm:text-xl lg:text-2xl text-black rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+            style={{
+              background: "linear-gradient(180deg, #FFF33b 0%, #FAA31B 100%)",
+            }}
+          >
+            VISIT SERENE BY PLAY
+          </a>
+        </div>
+
+
       {/* Video Section */}
       {/* <div className="max-w-5xl mx-auto px-4 py-8">
         <div
