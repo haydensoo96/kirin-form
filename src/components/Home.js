@@ -115,9 +115,8 @@ const Home = ({ onNavigateToForm }) => {
           a simple getaway into an unforgettable experience. <br />  <br /> <br /> <br />  Don’t just mark the
           occasion. Make it count.
         </p>
-      </div>
 
-       <div className="mb-8">
+          <div className="mb-8">
           <a
             href="https://sites.google.com/view/playwithserene/home"
             target="_blank"
@@ -130,6 +129,9 @@ const Home = ({ onNavigateToForm }) => {
             VISIT SERENE BY PLAY
           </a>
         </div>
+      </div>
+
+     
 
 
       {/* Video Section */}
