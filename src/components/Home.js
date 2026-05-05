@@ -116,7 +116,7 @@ const Home = ({ onNavigateToForm }) => {
           occasion. Make it count.
         </p>
 
-          <div className="mb-8">
+          <div className="mt-8">
           <a
             href="https://sites.google.com/view/playwithserene/home"
             target="_blank"
